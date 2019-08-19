@@ -20,3 +20,12 @@
  4. お気に入りの写真を好きな画家の画風に変換!
  5. カメラの中でいくつとれるかな？ゲーム
 
+## re:view
+
+```
+cd doc
+
+docker pull nuitsjp/md2review:latest
+docker pull vvakame/review:latest
+sudo sh ./pdf.sh
+```

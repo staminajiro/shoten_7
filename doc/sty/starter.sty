@@ -1,0 +1,22 @@
+%%% -*- coding: utf-8 -*-
+
+%%% 目次やリンクは、デフォルトでは赤くなり印刷には向かないので、黒くする。
+%%% （電子書籍用PDFでは、リンクであることがわかるよう赤くしたほうがよい。）
+%%% \hypersetup{colorlinks=false} -> リンクがおかしくなる？
+
+%%% 「@<strong>{ ... }」をゴシック体にする（「@<b>{ ... }」は明朝体のまま）。
+\renewcommand{\reviewstrong}[1]{\textbf{\gtfamily\sffamily #1}}
+
+%%% 「//source」の上下余白を狭める
+\renewenvironment{reviewsource}{%
+  \begin{shaded}%
+    \vspace*{-1.0zw}%
+    \small%    %% コードのフォントサイズを小さくする
+    \setlength{\baselineskip}{1.3zw}%
+    \begin{alltt}%
+      }{%
+    \end{alltt}%
+    \vspace*{-1.0zw}%
+  \end{shaded}%
+  \par\vspace*{0.5zw}%
+}

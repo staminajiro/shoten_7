@@ -1,0 +1,62 @@
+# review-epubmaker向けの設定ファイルの例。
+# yamlファイルをReVIEWファイルのある場所に置き、
+# 「review-epubmaker yamlファイル」を実行すると、<bookname>.epubファイルが
+# 生成されます。
+# このファイルはUTF-8エンコーディングで記述してください。
+
+contentdir: review
+
+# ブック名(ファイル名になるもの。ASCII範囲の文字を使用)
+bookname: book
+# 書名
+booktitle: stamina
+subtitle: stamina
+# 著者
+aut: stamina
+# prt:
+pbl: stamina
+contact: hoge@fuga.com
+prt_url: stamina
+date: 2019/09/xx
+rights: (C) 2019 @stamina
+? description
+# 以下はオプション
+# prt: 出版社
+# asn: Associated name
+# ant: Bibliographic antecedent
+# clb: 貢献者
+# edt: 編集者
+# dsr: デザイナ
+# ill: イラストレータ
+# pht: 撮影者
+# trl: 翻訳者
+# date: 刊行日
+# rights: 権利表記
+# description: ブックの説明
+#
+# coverfile: カバーページのbody要素内に挿入する内容を記述したファイル名
+# coverfile: _cover.html
+# coverimage: 表紙用画像ファイル
+# coverimage: cover.png
+titlepage: false
+# 固有IDに使用するドメイン
+# urnid: http://tatsu-zine.com/books/review-sample-book/1.0.0/
+# CSSファイル (yamlファイルおよびReVIEWファイルを置いたディレクトリにあること
+stylesheet: ["style.css"]
+# 目次として抽出するレベル
+toclevel: 2
+# セクション番号を表示するレベル
+secnolevel: 3
+epubversion: 3
+# HTMLのバージョン(現時点では4または5。デフォルトは4。epubversionを3にした場合は自動で5に設定される)
+htmlversion: 5
+# 目次生成用
+toc: true
+# 奥付生成用
+colophon: true
+texstyle: ["reviewmacro", "starter"]
+debug: true
+review_version: 2
+texdocumentclass: ["jsbook", "uplatex,twoside,a5j,9pt,openany"]
+coverimage: null
+externallink: false
