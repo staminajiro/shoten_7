@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <form action="/upload" method="post" id="form-id">
+          <input type="text" name="type">
+          <input type="submit">
+        </form>
+        <h3 class="text-muted">画像取得</h3>
+        <video autoplay id="v" style="-webkit-transform: scaleX(-1);"></video>
+        <!-- <button id="start">start</button>
+        <button id="stop">stop</button>
+        <button id="get">get</button> -->
+        <canvas id="capture_image"></canvas>
+      </div>
+    </div>
+  </body>
+  <script>
+  const $start = document.getElementById('start');
+  const $stop = document.getElementById('stop');
+  const $get = document.getElementById('get');
+  const $video = document.getElementById('v');
+  const $image = document.getElementById('capture_image');
+
+  var videoIsStopped = true;
+  // $start.addEventListener('click', () => {
+  //   startVideo();
+  // }, false);
+
+  // $stop.addEventListener('click', () => {
+  //   $video.pause();
+  //   videoIsStopped = false;
+  // })
+
+  // $get.addEventListener('click', () => {
+  //   copyFrame();
+  // })
+
+  function startVideo() {
+    console.log("start video!")
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+      .then(stream => {
+        $video.srcObject = stream;
+        videoIsStopped = true;
+      })
+      .catch(err => alert(`${err.name} ${err.message}`));
+  }
+
+  function copyFrame() {
+    var canvas_capture_image = document.getElementById('capture_image');
+    var cci = canvas_capture_image.getContext('2d');
+    var va = document.getElementById('v');
+
+    canvas_capture_image.width  = va.videoWidth;
+    canvas_capture_image.height = va.videoHeight;
+    cci.drawImage(va, 0, 0);  // canvasに『「静止画取得」ボタン』押下時点の画像を描画。
+  }
+
+  function canvasToBlob(canvas, callback, type) {
+    if (!type) {
+        type = 'image/png';
+    }
+
+    if (canvas.toBlob) {
+        canvas.toBlob(callback, type);
+    } else if (canvas.toDataURL && window.Uint8Array && window.Blob && window.atob) {
+        var binStr = atob(canvas.toDataURL(type).replace(/^[^,]*,/, '')),
+        len = binStr.length,
+        arr = new Uint8Array(len);
+
+        for (var i = 0; i < len; i++) {
+            arr[i] = binStr.charCodeAt(i);
+        }
+
+        callback(new Blob([arr], { type: type }));
+    } else {
+        callback(null);
+    }
+  }
+
+  function send(formElem) {
+    copyFrame();
+    var canvasElem = document.getElementById('capture_image');
+    if (!window.FormData) {
+      alert("error");
+      return;
+    }
+
+    canvasToBlob(canvasElem, function (canvasBlob) {
+      if (!canvasBlob) {
+        alert("canvasBlob error");
+        return;
+      }
+      var fd = new FormData(formElem);
+      fd.append('canvas-image', canvasBlob);
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', formElem.action, true);
+      xhr.send(fd);
+    }, 'image/png');
+    
+}
+
+  document.getElementById('form-id').addEventListener('submit', function (e) {
+      var formElem = this;
+      e.preventDefault();
+      send(formElem);
+  }, false);
+
+  startVideo();
+
+  </script>
+</html>
