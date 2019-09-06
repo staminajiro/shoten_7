@@ -1,0 +1,10 @@
+{
+    "name": "jetson",
+    "host": "jetson.local",
+    "protocol": "sftp",
+    "port": 22,
+    "username": "jetson",
+    "password": "{pass}",
+    "remotePath": "{workdir}",
+    "uploadOnSave": true
+}
