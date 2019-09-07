@@ -34,15 +34,42 @@ def upload_multipart():
 
     print(saveFileName, fileName)
     img = Image.open(save_path)
-    img_resize = img.resize((50, 50))
-    img_resize.save(save_path, "JPEG")
+    img_resize = crop_max_square(img).resize((300, 300)).convert('RGB')
+    img_resize.save(save_path)
     return make_response(jsonify({'result':'upload OK.'}))
+
+@app.route('/clean')
+def clean():
+    dirs =  os.walk('dest')
+    error_images = []
+    for directory, sub_directory, filenames in dirs:
+        if not filenames:
+            continue
+        for filename in filenames:
+            filepath = os.path.join(directory,  filename)
+            print(filepath)
+            try:
+                Image.open(filepath).load()
+            except:
+                print("error🍎", filepath)
+                error_images.append(filepath)
+                os.remove(filepath)
+    return jsonify(error_images)
 
 @app.errorhandler(werkzeug.exceptions.RequestEntityTooLarge)
 def handle_over_max_file_size(error):
     print('werkzeug.exceptions.RequestEntityTooLarge')
     return 'result : file size is overed.'
 
+def crop_center(pil_img, crop_width, crop_height):
+    img_width, img_height = pil_img.size
+    return pil_img.crop(((img_width - crop_width) // 2,
+                         (img_height - crop_height) // 2,
+                         (img_width + crop_width) // 2,
+                         (img_height + crop_height) // 2))
+
+def crop_max_square(pil_img):
+    return crop_center(pil_img, min(pil_img.size), min(pil_img.size))
 
 if __name__ == '__main__':
     # app.run()
