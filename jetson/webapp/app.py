@@ -4,6 +4,7 @@ import os
 import werkzeug
 from datetime import datetime
 from PIL import Image
+from predict import predict
 
 app = Flask(__name__)
 
@@ -37,6 +38,27 @@ def upload_multipart():
     img_resize = crop_max_square(img).resize((300, 300)).convert('RGB')
     img_resize.save(save_path)
     return make_response(jsonify({'result':'upload OK.'}))
+
+@app.route('/predict', methods=['POST'])
+def predict_from_image():
+    file_key = 'canvas-image'
+    if file_key not in request.files:
+        return make_response(jsonify({'result':'uploadFile is required.'}))
+
+    file = request.files[file_key]
+    fileName = file.filename
+    if not fileName:
+        return make_response(jsonify({'result':'filename must not empty.'}))
+    image_type = request.form.get('type', '')
+    saveFileName = image_type + datetime.now().strftime('_%Y%m%d_%H%M%S') + '.jpg'
+    upload_dir = os.path.join(UPLOAD_DIR, image_type)
+    save_path = os.path.join(upload_dir, saveFileName)
+    os.makedirs(upload_dir, exist_ok=True)
+    img = Image.open(file)
+    img_resize = crop_max_square(img).resize((300, 300)).convert('RGB')
+    result = predict(img_resize)
+
+    return make_response(jsonify({'result':result}))
 
 @app.route('/clean')
 def clean():

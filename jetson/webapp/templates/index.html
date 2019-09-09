@@ -103,7 +103,8 @@
       var fd = new FormData(formElem);
       fd.append('canvas-image', canvasBlob);
       var xhr = new XMLHttpRequest();
-      xhr.open('POST', formElem.action, true);
+      // xhr.open('POST', formElem.action, true);
+      xhr.open('POST', 'predict', true);
       xhr.send(fd);
     }, 'image/png');
     
