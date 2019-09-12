@@ -20,7 +20,7 @@ jupyter notebook --ip='*' --NotebookApp.token='' --NotebookApp.password=''
 
 ```
 sudo -H pip3 install jetson-stats
-sodu jtop
+sudo jtop
 ```
 
 ## SDカードコピー(for mac)
