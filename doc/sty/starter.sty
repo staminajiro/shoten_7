@@ -2,7 +2,7 @@
 
 %%% 目次やリンクは、デフォルトでは赤くなり印刷には向かないので、黒くする。
 %%% （電子書籍用PDFでは、リンクであることがわかるよう赤くしたほうがよい。）
-%%% \hypersetup{colorlinks=false} -> リンクがおかしくなる？
+\hypersetup{colorlinks=false,pdfborder = {0 0 0},}
 
 %%% 「@<strong>{ ... }」をゴシック体にする（「@<b>{ ... }」は明朝体のまま）。
 \renewcommand{\reviewstrong}[1]{\textbf{\gtfamily\sffamily #1}}
