@@ -13,6 +13,7 @@ TensorFlowのチュートリアルを参考にしました。
 
 git cloneでデータをColab上にデータをダウンロードしたあと、
 以下のようにしてデータを入力するための準備をします。
+
 ```python
 image_size = 224
 batch_size = 32
@@ -42,11 +43,14 @@ val_data = data_gen.flow_from_directory(
     subset='validation'
 )
 ```
+
 チュートリアルを参考にモデルの作成、コンパイル、訓練をしました。
 以下のようなモデルを作成しました。
+
 ```python
 model.summary()
 ```
+
 ```:output
 Model: "sequential"
 _________________________________________________________________
@@ -71,29 +75,35 @@ Trainable params: 344,579
 Non-trainable params: 2,257,984
 _________________________________________________________________
 ```
+
 TensorFlow.jsで動かすためにモデルを変換する必要があります。
 tensorflowjsをインポートします。
 最新のバージョンのtensorflowjsではうまくいかなかったので、
 バージョンを指定してインストールします。
+
 ```python
 !pip install tensorflowjs==1.2.6
 import tensorflowjs as tfjs
 tfjs.converters.save_keras_model(model, save_dir)
 ```
+
 変換後のデータはローカルにダウンロードします。
 
 ## webアプリの作成
 ### ライブラリのインストール
 node.jsをインストールし、npmでnuxt, tfjs, tfjs-dataをインストールします。
 nuxt.jsのガイドを参考にwebアプリを作成します。
+
 ```powershell
 npx create-nuxt-app <project-name>
 ```
+
 を実行したあと、いくつか質問されます。
 UIフレームワークとしてVuetifyを選択します。
 
 ### ウェブカメラ
 componetsフォルダ内にウェブカメラの映像を表示するコンポーネントWebCamera.vueを作成します。
+
 ```:WebCamera.vue
 <template>
   <video ref="video" height="224" width="224" autoplay></video>
@@ -122,11 +132,13 @@ export default {
 }
 </script>
 ```
+
 MediaDevices.getUserMedia()メソッドはEdgeでは未対応らしいので、
 Edgeなどのブラウザを利用している場合はWebCamera.vueを変更する必要があると思います。
 
 ### TensorFlow.js
 pagesフォルダ内のindex.vueを以下のように変更します。
+
 ```:index.vue
 <template>
   <v-layout column justify-center>
@@ -193,6 +205,7 @@ export default {
 }
 </script>
 ```
+
 Google Colabで作成したモデルはsticフォルダにダウンロードしており、
 loadModel()で読み込んでいます。
 
@@ -200,16 +213,20 @@ loadModel()で読み込んでいます。
 preprocessing_functionを設定したと思います。
 preprocess_input内では[-1, 1]にスケーリングしているようなので、
 カメラから取得した画像にも
+
 ```
 img = img.div(tf.scalar(127.5)).sub(tf.scalar(1))
 ```
+
 としてスケーリングします。
 
 predict()はmodelの予測した確率から、カメラに写っている手を予測し番号で返します。
 チョキ: 0, グー: 1, パー:2です。
+
 ```
 {{ labels[(pred + 1) % 3] }}
 ```
+
 で出された手に勝つ手を表示します。
 
 ![アプリ画面](../images/chap02_janken_app.jpg)
