@@ -1,260 +1,200 @@
-# Jetsonで作る一人じゃんけんゲーム
+# xx
+## xx
 
-## はじめに
-本章でJetson Nanoというシングルボードコンピューターを用いてじゃんけんゲームを作成する過程を紹介します。
+xx
 
-## 目次
-+ Jetson Nanoとは
-+ Jetson NanoでPyTorchを動かす
-+ Google Colaboratoryでじゃんけんモデルの学習
-+ Jetson Nanoでじゃんけん画像を推論
-+ （おまけ）webアプリ化してじゃんけんゲームを作ろう
+xx
 
-## Jetson Nanoとは
-Jetson NanoはNVIDIA社が販売しているGPU付きのシングルボードコンピューターです。
-cuda等の環境がデフォルトで同梱されているため、tensorflow等のディープラーニングライブラリを比較的簡単にgpu上で動作させることができます。
-今回はPyTorchというFacebookが開発したディープラーニングライブラリを用いて、Jetson Nano上で「グー」「チョキ」「パー」の3つの画像を判別していきます。
+xx
 
-![Jetson Nanoのかっこいい写真](./images/xxxx.jpeg=300x300)
+## xx
 
-## Jetson NanoでPyTorchを動かす
+xx
 
-まずはJetsonで、PyTorchの環境を構築します。
+xx
 
-Jetson Nano, PyTorchともに更新が頻繁にあるので、公式のリポジトリ(https://github.com/pytorch/pytorch)を参照してインストールしてください。（2019/09/01現在では、以下のコマンドでインストール可能でした。）
+xx
 
-```
-mkdir ~/workspace
-mkdir ~/workspace/tmp
+## xx
 
-# install pytouch
-cd ~/workspace/tmp
-wget https://nvidia.box.com/shared/static/veo87trfaawj5pfwuqvhl6mzc5b55fbj.whl -O torch-1.1.0a0+b457266-cp36-cp36m-linux_aarch64.whl
-pip3 install numpy torch-1.1.0a0+b457266-cp36-cp36m-linux_aarch64.whl
+xx
 
-# install torch vision
-# https://roshiago.blog.so-net.ne.jp/2019-05-04
-cd ~/workspace/tmp
-sudo apt install -y libjpeg-dev zlib1g-dev
-git clone -b v0.3.0 https://github.com/pytorch/vision torchvision
-cd torchvision
-sudo python3 setup.py install
-```
+xx
 
-なお、Jupyter Notebookがあるとリモートから接続して開発しやすくなるので、おすすめです。
+xx
 
-```
-# install other lib
-pip3 install jupyter
-sudo apt -y install libjpeg-dev libfreetype6-dev pkg-config libpng-dev
-pip3 install matplotlib pillow==5.4.1
-```
+## xx
 
-PyTorchからgpuが利用できるかは、Pythonで以下を実行して確認してください。
+xx
 
-```
-import torch
-torch.cuda.is_available() # -> gpuが使える場合True
-```
+xx
 
-以上で、Jetson Nano へのPyTorchのインストールは完了です。
+xx
 
-## Google Colaboratoryでじゃんけんモデルの学習
+## xx
 
-今回は画像の学習はJetson Nanoではなく、Google Colaboratory（以下、colabo）というgoogleが提供しているPython実行環境上で行います。colaboは無料で使えるJupyter Notebook環境で、GPUを利用することも可能です。また、PyTorchもデフォルトでインストールされているので、手軽にディープラーニングを試すことができます。
+xx
 
-今回は、PyTorchが公開している"Transfer Learning Tutorial(https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html)"を参考に、じゃんけん画像判定モデルを構築していきます。
+xx
 
-Transfer Learning(転移学習)は、公開されているモデルの構造・パラメータを流用して、簡易に学習を行うことができる手法です。
-PyTorchはサブモジュールのtorchvisionを用いることで、簡単に公開されているモデルをダウンロードすることができます。
+xx
 
-### 転移学習
+## xx
 
-今回はresnet50という軽量なモデルを用いて、転移学習を行います。
+xx
 
-ディープラーニングでは、多数のニューラルネットが層状に組み合わさってできています。 # 雑な説明、時間があれば無限に書けるが...
+xx
 
-以下が、resnet50の層の構造です。
+xx
 
-![パワポで作ったresnet50のかっこいい絵](./images/xxxx.jpeg=300x300)
+## xx
 
-このうち、最後の"全結合層"のみを再学習することによって、すでに学習が進んで画像の特徴抽出機能を持った層を転用することができます。
+xx
 
-以下は、PyTorchのチュートリアルに注釈をつけたものです。
+xx
 
-```
-# モデルのロード
-model_conv = torchvision.models.resnet18(pretrained=True) 
+xx
 
-# パラメータを更新しないように設定
-for param in model_conv.parameters():
-    param.requires_grad = False
+## xx
 
-# fc == full conecction == 全結合層の値を取得
-num_ftrs = model_conv.fc.in_features
+xx
 
-# 新たに全結合層を定義（nn.Linearの第2引数はクラス数） --- (1)
-model_conv.fc = nn.Linear(num_ftrs, 2)
-```
+xx
 
-今回はじゃんけん判別モデルを作成したいため、(1)のクラス数を変更してあげましょう
+xx
 
-```
-class_num = 3
-model_conv.fc = nn.Linear(num_ftrs, class_num)
-```
+## xx
 
-### データの準備
+xx
 
-それでは、学習用のじゃんけんの画像を集めていきましょう。今回はグー、チョキ、パーごとにjpg画像を100枚ぐらいずつ集めてみてください
-（手の写真なので、スマートフォンなどで撮影すれば良いかと思います）。
+xx
 
-集めた画像については、学習用と検証用に50枚ずつ以下のようなディレクトリ構成で格納してください。
+xx
 
-```
-train
-|    |----goo
-|    |----choki
-|    |----paa
-|
-val--
-     |----goo
-     |----choki
-     |----paa
-```
+## xx
 
-データはgoogle driveにアップロードすれば、以下のようにしてcolaboから参照することができます。
+xx
 
-```
-from google.colab import drive
-drive.mount('/content/drive', force_remount=True)
-!cp -r {your janken directory} ./
-data_dir = "{your data directory}"
-```
+xx
 
-これで、データの準備はできました。
+xx
 
-### 実行、モデルの保存
-あとは、notebookどおりに実行していくとモデルが出力できます。この手順だと、上から
-+ データロード
-+ データアーギュメンテーション（画像の水増し）
-+ 訓練用の関数などの定義
-+ モデル定義
-+ モデルの訓練
+## xx
 
-となります。
+xx
 
-訓練の過程で
+xx
 
-```
-Epoch 9/24
-----------
-train Loss: 0.5237 Acc: 0.7938
-val Loss: 0.3559 Acc: 0.8603
-```
+xx
 
-というような表示がでますので、各エポック毎にLoss（損失）が減って、Acc（精度）が増えていれば、学習が正常に行われていることになります。
+## xx
 
+xx
 
-作成したモデルは、
+xx
 
-```
-torch.save(model_conv.state_dict(), "{google drive directory}")
-```
+xx
 
-として、google driveに保存してください。
+## xx
 
-以上で、モデルの学習は終了です。
+xx
 
-### Jetson Nanoでじゃんけん画像を推論
+xx
 
-それではJetson Nanoでじゃんけん画像を推論してみましょう。
-Jetson上でPyTorchを動かす環境はすでに整っていますので、モデルをgoogle driveからダウンロードします（ここでは、"hanken_model.dat"という名前で保存しました）。
+xx
 
-推論用のPythonスクリプトは以下になります。
+## xx
 
+xx
 
-```predict.py
+xx
 
-def init_model(model_path, class_num):
-    model_conv = torchvision.models.resnet50()        
-    num_ftrs = model_conv.fc.in_features
-    model_conv.fc = nn.Linear(num_ftrs, class_num)
+xx
 
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    print(device)
-    model_conv = model_conv.to(device)
-    print('start loading')
-    model_conv.load_state_dict(torch.load(model_path))
-    print('finish loading')
-    model_conv.eval()
-    return model_conv
+## xx
 
-def predict_from_imagepath(image_path, class_names):
-    image = Image.open(image_path)
-    return predict(image, class_names)
+xx
 
-def predict(image, class_names):
-    data_transform = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+xx
 
-    image = data_transform(image).unsqueeze(0).cuda()
-    print('start predicting')
-    out = model_conv(image)
-    print('finish predicting', out, out.argmax())
-    class_name = class_names[out.argmax()]
-    print('Predicted class is: {}'.format(class_name))
-    return class_name
+xx
 
-if __name__=='__main__':
-    class_names = ['choki', 'goo', 'paa']
-    class_num = len(class_names)
-    model_conv = init_model('./janken_model.dat', class_num)
-    predict_from_imagepath('./goo.jpg', class_names)
+## xx
 
-```
+xx
 
-まず、init_model関数では、訓練していないresnet50のモデルをダウンロードし、
-colabo上で訓練したデータをロードしています。
+xx
 
-GPUが正常に認識されていれば、
+xx
 
-```
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-print(device)
-```
-の箇所で"cuda:0"が出力されるはずです。
+## xx
 
-また、モデルをロードした痕は
+xx
 
-```
-model_conv.eval()
-```
+xx
 
-を行わないとモデルが推論モードにならないので、注意してください。
+xx
 
-predict関数では、画像を変換し、モデルを用いて推論を行います。画像変換時のパラメータは、学習の際に評価画像を生成することに用いたパラメータを流用しています。
+## xx
 
-では、推論用に"goo.jpg"という名前でグーの画像をJetson上に保存し、上記のスクリプトを実行してください。
-正しく推論されたでしょうか？ 入力画像を様々に変えて実行してみると、面白いかと思います。
+xx
 
-## （おまけ）webアプリ化してじゃんけんゲームを作ろう
+xx
 
-[こちらのリポジトリ](https://github.com/staminajiro/shoten_7/tree/master/jetson)に以上の推論処理をwebアプリ化したものを格納しました。
+xx
 
-![まだ完成していないじゃんけんアプリの画像](./images/janken.jpeg=300x300)
+## xx
 
-Jetson Nano上で、
+xx
 
-```
-pip3 install flask
-flask run app.py
-```
+xx
 
-とすると、localhost:5000上にwebアプリが立ち上がります。モデルのロードと1回目の推論は数分時間がかかりますが、それ以降はさくさく動きます。
+xx
 
-## おわりに
-以上で、じゃんけん推論システムの紹介を終わります。今回はじゃんけんを題材に、シングルボードコンピュータでディープラーニングを組み込んだアプリケーションを動かしてみました。筆者が生成したモデルはまだまだ精度が低いので、画像データを増やしたり、モデルを変更したりして、今後も精度を上げていきたいと思います。みなさんも、Jetson Nanoでいろいろ遊んでみると面白いかと思います。
+## xx
+
+xx
+
+xx
+
+xx
+
+## xx
+
+xx
+
+xx
+
+xx
+
+## xx
+
+xx
+
+xx
+
+xx
+
+## xx
+
+xx
+
+xx
+
+xx
+
+## xx
+
+xx
+
+xx
+
+xx
+
+## xx
+
+xx
+
+xx
+
+xx

@@ -9,17 +9,15 @@ contentdir: review
 # ブック名(ファイル名になるもの。ASCII範囲の文字を使用)
 bookname: book
 # 書名
-booktitle: stamina
-subtitle: stamina
+booktitle: 最新デバイスで作る！あそびのレシピ集
 # 著者
-aut: stamina
+aut: みう
 # prt:
-pbl: stamina
-contact: hoge@fuga.com
-prt_url: stamina
-date: 2019/09/xx
-rights: (C) 2019 @stamina
-? description
+pbl: すたみなじろう
+prt_url: すたみなじろう
+date: 2019/09/23
+rights: (C) 2019 @staminajiro
+
 # 以下はオプション
 # prt: 出版社
 # asn: Associated name
@@ -54,9 +52,9 @@ htmlversion: 5
 toc: true
 # 奥付生成用
 colophon: true
-texstyle: ["reviewmacro", "starter"]
+texstyle: ["starter", "reviewmacro"]
 debug: true
 review_version: 2
-texdocumentclass: ["jsbook", "uplatex,twoside,a5j,9pt,openany"]
+texdocumentclass: ["jsbook", "uplatex,twoside,b5j,9pt,openany"]
 coverimage: null
 externallink: false
