@@ -4,14 +4,20 @@
 webブラウザ上でじゃんけんをするモデルを動かしました。
 モデルの学習はGoogle Colabで行い、
 Nuxt.js, TensorFlow.jsを使ってwebアプリを作成しました。
-Chromeを使用しています。
+ブラウザはChromeを使用しています。
 
 ## モデルの作成
 Google Colab上でモデルを作成します。
-TensorFlowのチュートリアルを参考にしました。
-また、データはからあげさんのデータセットを使用させていただきました。
+TensorFlowのチュートリアル(https://www.tensorflow.org/tutorials/images/transfer_learning)を参考にしました。
+また、データはからあげさんのデータセット(https://github.com/karaage0703/janken_dataset)を使用させていただきました。
 
-git cloneでデータをColab上にデータをダウンロードしたあと、
+```
+!git clone https://github.com/karaage0703/janken_dataset data
+data_dir = '/content/data'
+!rm -rf /content/data/.git
+```
+
+でデータをColab上にデータをダウンロードしたあと、
 以下のようにしてデータを入力するための準備をします。
 
 ```python
@@ -76,23 +82,23 @@ Non-trainable params: 2,257,984
 _________________________________________________________________
 ```
 
-TensorFlow.jsで動かすためにモデルを変換する必要があります。
+TensorFlow.jsで動かすためにモデルを保存します。
 tensorflowjsをインポートします。
 最新のバージョンのtensorflowjsではうまくいかなかったので、
 バージョンを指定してインストールします。
 
-```python
+```
 !pip install tensorflowjs==1.2.6
 import tensorflowjs as tfjs
 tfjs.converters.save_keras_model(model, save_dir)
 ```
 
-変換後のデータはローカルにダウンロードします。
+保存したデータはローカルにダウンロードします。
 
 ## webアプリの作成
 ### ライブラリのインストール
-node.jsをインストールし、npmでnuxt, tfjs, tfjs-dataをインストールします。
-nuxt.jsのガイドを参考にwebアプリを作成します。
+node.jsをインストールし、
+nuxt.jsのガイド(https://ja.nuxtjs.org/guide/installation/)を参考にwebアプリを作成します。
 
 ```powershell
 npx create-nuxt-app <project-name>
@@ -100,9 +106,18 @@ npx create-nuxt-app <project-name>
 
 を実行したあと、いくつか質問されます。
 UIフレームワークとしてVuetifyを選択します。
+フレームワークの選択が終了したら、
+
+```
+cd <project-name>
+npm install @tensorflow/tfjs @tensorflow/tfjs-data
+```
+
+を実行します。
 
 ### ウェブカメラ
-componetsフォルダ内にウェブカメラの映像を表示するコンポーネントWebCamera.vueを作成します。
+
+componentsフォルダ内にウェブカメラの映像を表示するコンポーネントWebCamera.vueを作成します。
 
 ```:WebCamera.vue
 <template>
@@ -206,7 +221,7 @@ export default {
 </script>
 ```
 
-Google Colabで作成したモデルはsticフォルダにダウンロードしており、
+Google Colabで作成したモデルはstiacフォルダにダウンロードしており、
 loadModel()で読み込んでいます。
 
 モデルの訓練時に入力したデータに
@@ -232,10 +247,12 @@ predict()はmodelの予測した確率から、カメラに写っている手を
 ![アプリ画面](../images/chap02_janken_app.jpg)
 
 ## おわりに
-コンソールを表示するとエラーが発生しているようなので、
-修正したいです。
-モデルの精度があまりよくないので背景画像の置換などのData Augmentationを行いたかったです。
-あと表示部分がただのテキストなのが残念ですね。
+あまり精度はよくないですがじゃんけんをする簡単なアプリを作ることができたと思います。
+今後の改善点としては、
+- モデルの精度の向上
+- グー、チョキ、パーをテキストではなく画像で表示
+があると思います。
+
 
 ## 参考文献
 - https://www.tensorflow.org/tutorials/images/transfer_learning
