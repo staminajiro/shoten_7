@@ -59,7 +59,6 @@ Bootstrapのmodalとのあわせ技で、これでちゅうもんボタンを押
 ## アプリケーションの公開
 ### Firebase
 GoogleのクラウドサービスFirebaseを利用してアプリケーションを公開し、任意のブラウザから利用できるようにします。
-![Firebase](../images/mobileorder_5.jpg)
 ### Firebaseプロジェクトの作成
 Webアプリを作成するためにまずFirebaseプロジェクトを作成します。
 Firebaseのサイトからコンソールに移動します。Googleのアカウントの選択を求められるので、使用するアカウントを選択します。
