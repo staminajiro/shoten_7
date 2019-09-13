@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello World!</title>
+</head>
+
+<body>
+    <div class="camera">
+        <video id="video"></video>
+        <!-- <video id="video" style="display: none"></video> -->
+        <!-- <canvas id="camera_canvas" width="200px" height="200px"></canvas> -->
+    </div>
+    <div class="rectangle_image">
+        <!-- ビリヤード台(9フィート)は290*160cmらしい -->
+        <canvas id="rectangle_canvas"></canvas>
+    </div>
+    <div class="Coordinate">
+        <div>
+        <p>左上</p>
+            <input id="tl_x" type="number" value="0">
+            <input id="tl_y" type="number" value="500">
+        </div>
+        <p>右上</p>
+            <input id="tr_x" type="number" value="500">
+            <input id="tr_y" type="number" value="500">
+        </div>
+        <p>左下</p>
+        <input id="bl_x" type="number" value="0">
+        <input id="bl_y" type="number" value="0">
+        </div>
+        <p>右下</p>
+            <input id="br_x" type="number" value="500">
+            <input id="br_y" type="number" value="0">
+        </div>
+    </div>
+    <script src="bundle.js"></script>
+</body>
+
+</html>
