@@ -19,5 +19,5 @@ cd doc
 
 docker pull nuitsjp/md2review:latest
 docker pull vvakame/review:latest
-sudo sh ./pdf.sh
+sudo sh ./pdf.sh # macはsudo不要
 ```
