@@ -20,7 +20,7 @@ posenet_sampleに以下のような機能を追加し、より遊びやすく・
 クライアントの性能によって、処理速度に差異が生じると考えられるので、いくつかの端末で性能比較をしました。
 
 ## アプリの起動
-以下のコマンドを実行してください。
+以下のコマンドを実行してください。
 ```
 git clone git@github.com:staminajiro/shoten_7.git
 
@@ -37,7 +37,7 @@ docker run -p 8080:8080 gesturegame
 
 ![プライバシーエラー###scale=0.5###](../images/chap02_privacyerror.png)
 
-その後、カメラの使用を許可してください。
+その後、カメラの使用を許可してください。
 
 ![カメラを許可###scale=0.5###](../images/chap02_camera.png)
 
