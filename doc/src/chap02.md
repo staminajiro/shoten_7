@@ -1,200 +1,70 @@
-# xx
-## xx
+# カメラの中でいくつとれるかな？ゲーム
+## はじめに  
+カメラの中でいくつとれるかな？ゲームは、WebカメラとWebブラウザだけで手軽に遊べるジェスチャゲームです。  
+落ちてくるお菓子を手でキャッチすると得点が得られます。  
 
-xx
+このゲームのベースとなっているプログラム(https://github.com/gnavi-blog/posenet_sample)の詳細は、  
+ぐるなびさんのテックブログ(https://developers.gnavi.co.jp/entry/posenet/hasegawa)で紹介されています。
 
-xx
+posenet_sampleに以下のような機能を追加し、より遊びやすく・楽しいものに仕上げました。
 
-xx
+- Webアプリ化
+- 操作インタフェースの追加
+- 効果音の追加
+- 落ちてくるものをお菓子に変更
 
-## xx
+本書では、追加した機能について簡単に紹介します。  
 
-xx
+また、このゲームは、Googleが開発している姿勢推定のJSライブラリ「PoseNet」を利用しているため、  
+姿勢推定はクライアント側で処理されます。  
+クライアントの性能によって、処理速度に差異が生じると考えられるので、いくつかの端末で性能比較をしました。
 
-xx
+## アプリの起動
 
-xx
+## Webアプリ化
+posenet_sampleは、index.htmlのローカルファイルをブラウザで開くだけでゲームができるようになっています。  
+更に手軽に遊べるように、Webアプリとして起動し、ブラウザでアクセするだけで遊べるように改良します。  
 
-## xx
+Webアプリのサーバー環境としてDockerを利用します。
 
-xx
+注意として、WebブラウザからWebカメラにアクセスするためには、Webアプリはhttpsで配信している必要があるので、  
+Dockerイメージビルド時に証明書を作成し、httpsでWebサーバーを起動するようにしています。
 
-xx
+```Dockerfile
+RUN openssl genrsa -out orekey.pem 1024 && \
+    openssl req -new -key orekey.pem -subj "/C=JP/ST=Tokyo-to/L=Shibuya/O=Company Name/OU=IT dept./CN=Company Dept CA" > orekey.csr && \
+    openssl x509 -req -in orekey.csr -signkey orekey.pem -out orekey.cert
+```
 
-xx
+Webサーバー起動時に、作成した証明書を参照するようにします。
+```index.js
+// 証明書のファイルを指定する
+const options = { 
+        key: fs.readFileSync('orekey.pem'),
+        cert: fs.readFileSync('orekey.cert')
+      };
 
-## xx
+var server = https.createServer(options,app);
+```
 
-xx
+```bash
+model.summary()
+```
+## 操作インタフェースの追加
 
-xx
+ゲーム開始機能  
+リトライ機能
 
-xx
+## 効果音の追加
 
-## xx
+取得時に効果音が流れるように
 
-xx
+## 落ちてくるものをお菓子に変更
 
-xx
+ボールからお菓子に
 
-xx
+## 実行結果比較
 
-## xx
+ラズパイ　jetson GPD Pocket で比較
 
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
-
-## xx
-
-xx
-
-xx
-
-xx
+## さいごに
