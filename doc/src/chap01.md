@@ -1,260 +1,139 @@
-# webブラウザで動かすじゃんけん
+# 斜めから撮ったビリヤード台の画像を補正してハスラーをサポートする！
 
-## はじめに
-webブラウザ上でじゃんけんをするモデルを動かしました。
-モデルの学習はGoogle Colabで行い、
-Nuxt.js, TensorFlow.jsを使ってwebアプリを作成しました。
-ブラウザはChromeを使用しています。
+みんなでワイワイビリヤード中、狙いたい玉が隠れて困ってしまうことよくありますよね？上手く当てたいけどどこに撞いていいかわからない、こんな時に狙う場所を教えてくれるアプリがあったらなあ。
 
-## モデルの作成
-Google Colab上でモデルを作成します。
-TensorFlowのチュートリアル(https://www.tensorflow.org/tutorials/images/transfer_learning)を参考にしました。
-また、データはからあげさんのデータセット(https://github.com/karaage0703/janken_dataset)を使用させていただきました。
+## 画像を加工して玉の配置を取得しよう！
 
-```
-!git clone https://github.com/karaage0703/janken_dataset data
-data_dir = '/content/data'
-!rm -rf /content/data/.git
-```
+どんなAIも玉の配置も見ずに最適解を出すのは難しいです。しかし一般のビリヤード場で真上から撮影することは難しいので、うまいこと画像を処理する必要があります。
 
-でデータをColab上にデータをダウンロードしたあと、
-以下のようにしてデータを入力するための準備をします。
+そこで今回は斜めから撮影した写真を真上から撮影した風な画像に変換するアプリ・デバイスを作りたいと思います。
 
-```python
-image_size = 224
-batch_size = 32
+## Jetson Nano
 
-data_gen = keras.preprocessing.image.ImageDataGenerator(
-    preprocessing_function=keras.applications.mobilenet.preprocess_input,
-    rotation_range=10,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    shear_range=0.2,
-    zoom_range=0.3,
-    horizontal_flip=True,
-    validation_split=0.1
-)
+ちっちゃいけどGPUも積んでるすごいやつ。今回はこいつでビリヤード場で簡単に撮影→変換ができるようにしてみたいです。
 
-train_data = data_gen.flow_from_directory(
-    data_dir,
-    target_size=(image_size, image_size),
-    batch_size=batch_size,
-    subset='training'
-)
+<s>しかしこいつが使われることはなかった・・・</s>
 
-val_data = data_gen.flow_from_directory(
-    data_dir,
-    target_size=(image_size, image_size),
-    batch_size=batch_size,
-    subset='validation'
-)
-```
+- Jetson Nano  
+(https://www.nvidia.com/ja-jp/autonomous-machines/embedded-systems/jetson-nano/)
 
-チュートリアルを参考にモデルの作成、コンパイル、訓練をしました。
-以下のようなモデルを作成しました。
+## 実装したいもの(理想)
 
-```python
-model.summary()
-```
+すぎゃーんさん(twitter:@sugyan)が矩形変換のアプリを作っていました。斜めから撮影された将棋盤を真上から撮影した風に変換しています。
 
-```:output
-Model: "sequential"
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
-=================================================================
-mobilenetv2_1.00_224 (Model) (None, 7, 7, 1280)        2257984   
-_________________________________________________________________
-global_average_pooling2d (Gl (None, 1280)              0         
-_________________________________________________________________
-dense (Dense)                (None, 256)               327936    
-_________________________________________________________________
-dropout (Dropout)            (None, 256)               0         
-_________________________________________________________________
-dense_1 (Dense)              (None, 64)                16448     
-_________________________________________________________________
-dropout_1 (Dropout)          (None, 64)                0         
-_________________________________________________________________
-dense_2 (Dense)              (None, 3)                 195       
-=================================================================
-Total params: 2,602,563
-Trainable params: 344,579
-Non-trainable params: 2,257,984
-_________________________________________________________________
-```
+OpenCVでの実装のようです。とてもサクサクしていて素敵ですね。
 
-TensorFlow.jsで動かすためにモデルを保存します。
-tensorflowjsをインポートします。
-最新のバージョンのtensorflowjsではうまくいかなかったので、
-バージョンを指定してインストールします。
+完成形のイメージには非常に近いです。
 
-```
-!pip install tensorflowjs==1.2.6
-import tensorflowjs as tfjs
-tfjs.converters.save_keras_model(model, save_dir)
-```
+- 斜めに写った画像をCanvasで矩形に補正する  
+(https://memo.sugyan.com/entry/2018/09/03/212712)
 
-保存したデータはローカルにダウンロードします。
+## 実装したもの(現実)
 
-## webアプリの作成
-### ライブラリのインストール
-node.jsをインストールし、
-nuxt.jsのガイド(https://ja.nuxtjs.org/guide/installation/)を参考にwebアプリを作成します。
+### 開発
++ TypeScript (3.5.3)
++ html5
 
-```powershell
-npx create-nuxt-app <project-name>
-```
+せっかくなのでこの機会にTypeScriptに入門したいと思ったので、一般的な四角形から矩形への射影変換をTypeScriptで実装することにしました。愚直に書いたのでGPUを使えず3FPSくらいが限度になりそうかなーと思いつつ実装。式はこの辺りを参考にしました。
 
-を実行したあと、いくつか質問されます。
-UIフレームワークとしてVuetifyを選択します。
-フレームワークの選択が終了したら、
+- E.2　二次元の射影変換  
+(http://kondolab.org/archive/2010/research/cadcgtext/ChapE/ChapE02.html)
 
-```
-cd <project-name>
-npm install @tensorflow/tfjs @tensorflow/tfjs-data
-```
+ソースコードの全文はGithubに置いてあります。以下は変換後座標が変換前の座標のどこに対応するかを返す関数の実装です。本実装では矩形側のcanvasに1ピクセルごとに以下の関数を呼び出して元画像のピクセルをコピーしています。  
 
-を実行します。
+```typescript
+function createProjection(
+    tl: Point, //左上の座標
+    tr: Point, //右上
+    bl: Point, //左下
+    br: Point, //右下
+): (x: Point) => Point {
+    // 射影変換の係数を求める
+    const x2 = tr.x - tl.x;
+    const y2 = tr.y - tl.y;
+    const x3 = br.x - tl.x;
+    const y3 = br.y - tl.y;
+    const x4 = bl.x - tl.x;
+    const y4 = bl.y - tl.y;
 
-### ウェブカメラ
+    const delta123 = x2 * y3 - x3 * y2;
+    const delta124 = x2 * y4 - x4 * y2;
+    const delta134 = x3 * y4 - x4 * y3;
+    const delta1234 = delta123 + delta134;
+    const delta234 = delta1234 - delta124;
 
-componentsフォルダ内にウェブカメラの映像を表示するコンポーネントWebCamera.vueを作成します。
-
-```:WebCamera.vue
-<template>
-  <video ref="video" height="224" width="224" autoplay></video>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      video: null
-    }
-  },
-  mounted() {
-    this.stream()
-  },
-  methods: {
-    stream() {
-      this.video = this.$refs.video
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: false })
-        .then((stream) => {
-          this.video.srcObject = stream
-        })
-    }
-  }
+    const a1 = delta134 * x2;
+    const b1 = delta123 * x4;
+    const a2 = delta134 * y2;
+    const b2 = delta123 * y4;
+    const a0 = delta134 - delta234;
+    const b0 = delta123 - delta234;
+    const c0 = delta234;
+    return (p: Point) => new Point(
+        (a1 * p.x + b1 * p.y) / (a0 * p.x + b0 * p.y + c0) + tl.x,
+        (a2 * p.x + b2 * p.y) / (a0 * p.x + b0 * p.y + c0) + tl.y
+    );
 }
-</script>
 ```
 
-MediaDevices.getUserMedia()メソッドはEdgeでは未対応らしいので、
-Edgeなどのブラウザを利用している場合はWebCamera.vueを変更する必要があると思います。
+### 実証実験 in オフィス
 
-### TensorFlow.js
-pagesフォルダ内のindex.vueを以下のように変更します。
+ビリヤード場に行く前にPCで動作確認。射影変換が重すぎて0.5FPSくらいしか出ないことに気づきました。やはりきちんとGPUを使わないと厳しいですね。
 
-```:index.vue
-<template>
-  <v-layout column justify-center>
-    <v-flex xs12 sm8 md6 text-center>
-      <v-card>
-        <v-card-title class="align-center"></v-card-title>
-        <web-cam ref="webcam" />
-        <div>
-          {{ labels[(pred + 1) % 3] }}
-        </div>
-      </v-card>
-    </v-flex>
-  </v-layout>
-</template>
+オフィスにあって矩形に直すと嬉しそうなものを探すと適当な本があったので撮ってみました。結構綺麗に取れてますね。
 
-<script>
-import * as tf from '@tensorflow/tfjs'
-import * as tfd from '@tensorflow/tfjs-data'
-import WebCam from '../components/WebCam.vue'
+![オフィスでの撮影###scale=0.5###](../images/chapter01_prml.png)
 
-export default {
-  components: {
-    WebCam
-  },
-  data() {
-    return {
-      labels: ['チョキ', 'グー', 'パー'],
-      probs: [1, 0, 0],
-      pred: ''
-    }
-  },
-  mounted() {
-    Promise.all([this.setupCamera(), this.loadModel()]).then(
-      setInterval(this.predict, 200)
-    )
-  },
-  methods: {
-    async setupCamera() {
-      this.cam = await tfd.webcam(this.$refs.webcam.video)
-    },
-    async loadModel() {
-      this.model = await tf.loadLayersModel('/model/model.json')
-    },
-    async predict() {
-      let img = await this.cam.capture()
-      // スケーリング
-      img = img.div(tf.scalar(127.5)).sub(tf.scalar(1))
-      this.probs = await this.model.predict(img.expandDims(0)).data()
-      this.a = img
-      this.pred = this.argmax(this.probs)
-    },
-    argmax(arr) {
-      let idx = 0
-      let val = -Infinity
-      for (const [i, v] of arr.entries()) {
-        if (val < v) {
-          idx = i
-          val = v
-        }
-      }
-      return idx
-    }
-  }
-}
-</script>
-```
+### 実証実験 in ビリヤード場
 
-Google Colabで作成したモデルはstiacフォルダにダウンロードしており、
-loadModel()で読み込んでいます。
+いよいよJetsonだーとなったがモニター代わりにPCでリモートデスクトップすると演算がPCで走ることに気づきます。ビリヤード場で電源どうするんだ問題もあり愛用のMacを持ってビリヤード場に行きました。
 
-モデルの訓練時に入力したデータに
-preprocessing_functionを設定したと思います。
-preprocess_input内では[-1, 1]にスケーリングしているようなので、
-カメラから取得した画像にも
+ビリヤード場に着くと、カメラをセットする怪しげな一人客になってしまいました。流石にまずいと思ったのでお客さんがいない時間を狙って平日の朝にきて正解でした。
 
-```
-img = img.div(tf.scalar(127.5)).sub(tf.scalar(1))
-```
+![###scale=0.5###](../images/chapter01_rack.png)
 
-としてスケーリングします。
+真上から撮れてる！！
 
-predict()はmodelの予測した確率から、カメラに写っている手を予測し番号で返します。
-チョキ: 0, グー: 1, パー:2です。
+玉の配置がどれくらい見えるのか確認のためブレイク(強く撞いて玉を散らばすこと)してみると、、、
 
-```
-{{ labels[(pred + 1) % 3] }}
-```
+![ブレイク後の配置###scale=0.5###](../images/chapter01_break.png)
 
-で出された手に勝つ手を表示します。
+真上からの画像が見れるようになったので配置がよくわかりますね。<s>4回目のブレイクで</s>たまたま1番が隠れてしまったので頑張って当ててみようと思います。(下の丸が手玉(白玉)、上の丸が1番)。
 
-![アプリ画面](../images/chapter01_janken_app.jpg)
+このまままっすぐ撞いてしまうと別の玉に当たってしまいます。ここは右側のクッション(壁)を使って当てていきましょう。ポケットと玉の間を通すと当たってくれそうです。
 
-## おわりに
-あまり精度はよくないですがじゃんけんをする簡単なアプリを作ることができたと思います。
-今後の改善点としては、
-- モデルの精度の向上
-- グー、チョキ、パーをテキストではなく画像で表示
-があると思います。
+![右側から当たりそう！！(矢印は後から加工して入れました)###scale=0.5###](../images/chapter01_thinking.png)
 
+回転の影響を受けるとよくないので慎重に真ん中を撞きます、、、予想通り2クッションでしっかり当たりました！！  
 
-## 参考文献
-- https://www.tensorflow.org/tutorials/images/transfer_learning
-- https://github.com/karaage0703/janken_dataset
-- https://ja.nuxtjs.org/guide/installation/
+基本的に入射角=反射角なので真上から見るとかなり正確に見積もれます。  
+
+この矢印が自動で出てくるようになったらとても嬉しいですね。  
+
+## 終わりに
+### 感想
+フロントエンドはあまり得意ではなかったのですが、今回TypeScriptで開発することで結構わかるようになった気がします。TypeScriptの型は面白いですね、少し勉強してみようと思います。
+
+せっかく純粋に近い関数を書いたのにテストを書いていないのは残念でした、次の機会ではきちんとテストも書けるようにしたいです。  
+
+Jetson+カメラ+タッチディスプレイでモジュールが作れたら面白いなーと思いました。カメラスタンドがそもそも大きいので多少大きめディスプレイでも良いですね。
+
+### できたこと
+
+  + 射影変換を実装してブラウザでリアルタイムに調整・画像の取得ができるようになった。
+
+### 課題・やりたいこと
+
+  + 計算をCPUで回したらかなり動作が厳しくなった。今後はWebGLを利用した実装かOpenCVなどのそれ用のライブラリに乗っかるかなどして高速化したい。
+
+  + UIの改善。CPUに余裕がなくグラフィカルなUIを提供できなかったが、もう少し簡単に操作できるようにしたい。
+
+  + 玉の色がわかりづらいので玉を区別するのが難しい。色をくっきりさせるかポップアップで数値を表示できるようにしたい。
+
+  + 画面の上部がやや引き伸ばされているように見える。玉が平面に描かれているのではなく、3Dの物体として存在するのでよくない補正が入ってしまっているためか。
+
+  + 画像が取得できたので物体検出を利用して玉の配置を取得したい。
+
+  + 玉の軌跡の予想を表示できるようにしたい。
+
+  + 最適な撞き方を推薦してくれるようにしたい。
