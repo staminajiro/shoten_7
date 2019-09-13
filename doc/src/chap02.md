@@ -33,7 +33,7 @@ docker run -p 8080:8080 gesturegame
 無事起動できたら、(https://localhost:8080)にアクセスします。
 
 以下の画面のように、プライバシーエラーが表示されたら、  
-「詳細情報を表示」→「localhostにアクセスする」をクリックしてください。
+「詳細設定」→「localhostにアクセスする」をクリックしてください。
 
 ![プライバシーエラー###scale=0.5###](../images/chap02_privacyerror.png)
 
@@ -41,7 +41,11 @@ docker run -p 8080:8080 gesturegame
 
 ![カメラを許可###scale=0.5###](../images/chap02_camera.png)
 
+以下のような画面が表示されれば成功です。
 ![起動画面###scale=0.5###](../images/chap02_gametop.png)
+
+右手、もしくは左手を画面中央のゲーム開始部分に持ってくると、
+ゲームが開始します。
 
 ## Webアプリ化
 posenet_sampleは、index.htmlのローカルファイルをブラウザで開くだけでゲームができるようになっています。  
@@ -69,14 +73,47 @@ const options = {
 var server = https.createServer(options,app);
 ```
 
-```bash
-model.summary()
-```
 ## 操作インタフェースの追加
+恥ずかしがらずに実際遊んでみると、大人でも結構楽しめます。
+しかし、posenet_sampleは1回遊ぶと再読み込みが必要なため、
+連続して遊べません。
+何度でも連続して遊べるように、リトライ機能を追加します。
 
-ゲーム開始機能  
-リトライ機能
+せっかく姿勢推定ができる状態ですので、マウス操作ではなく
+身体を使ってゲームを開始できるようにします。
 
+カメラの映像に姿勢推定の結果を重ね合わせているcanvasに、
+「ゲーム開始」ボタンを配置します。
+canvasに四角形を描画するfillRect()と文字列を表示するfillText()を使って、
+「ゲーム開始」ボタン(のようなもの)を表現します。
+```
+ctx.fillRect(330,310,150,50);
+ctx.font = "bold 20px Arial";
+ctx.fillStyle = "blue";
+ctx.fillText("ゲーム開始", 350, 345);
+ctx.fill();
+```
+
+右手、もしくは左手が「ゲーム開始」ボタンと重なっているかどうかを、
+PoseNetの姿勢推定の結果の座標と、「ゲーム開始」ボタンの座標を比較して、
+判定します。
+
+```
+gameRestart([keypoints[9],keypoints[10]]);
+
+function gameRestart(wrists){
+    wrists.forEach((wrist) => {
+    if((330 - 10)  <= wrist.position.x && wrist.position.x <= (480 + 10) &&
+        (310 - 10) <= wrist.position.y && wrist.position.y <= (360+ 10)){
+        balls = [];
+        balls = initBalls(ballNum);
+        score = 0;
+        timeLimit = 50;
+        printLimit = timeLimit / 10;
+    }
+    });
+}
+```
 ## 効果音の追加
 
 取得時に効果音が流れるように

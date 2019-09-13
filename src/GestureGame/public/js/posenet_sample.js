@@ -25,7 +25,7 @@ const flipHorizontal = false;
 const contentWidth = 800;
 const contentHeight = 600;
 const ballNum = 2;
-const colors = ["red","blue","green"];
+const colors = ["red", "blue", "green"];
 const fontLayout = "bold 50px Arial";
 const lineWidth = 2;
 
@@ -38,8 +38,9 @@ let naviko = new Image();
 let navScale = 1;
 let net;
 let video;
-
-var annimationCallbackId ;
+let sound = new Audio();
+sound.src = "static/sound/suck1.mp3";
+var annimationCallbackId;
 //naviko.src = "naviko.png"
 balls = initBalls(ballNum);
 bindPage();
@@ -48,7 +49,7 @@ async function bindPage() {
     net = await posenet.load();
     try {
         video = await loadVideo();
-    } catch(e) {
+    } catch (e) {
         console.error(e);
         return;
     }
@@ -66,7 +67,8 @@ async function setupCamera() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({
             'audio': false,
-            'video': true});
+            'video': true
+        });
         video.srcObject = stream;
 
         return new Promise(resolve => {
@@ -103,7 +105,7 @@ function detectPoseInRealTime(video, net) {
         const pose = await net.estimateSinglePose(video, imageScaleFactor, flipHorizontal, outputStride);
         poses.push(pose);
 
-        ctx.clearRect(0, 0, contentWidth,contentHeight);
+        ctx.clearRect(0, 0, contentWidth, contentHeight);
 
         ctx.save();
         ctx.scale(-1, 1);
@@ -111,77 +113,77 @@ function detectPoseInRealTime(video, net) {
         ctx.drawImage(video, 0, 0, contentWidth, contentHeight);
         ctx.restore();
 
-	if (timeLimit % 10 == 0) {
-        looptmptime = new Date();
-        console.log(looptmptime-loopstarttime)
-        loopstarttime = looptmptime
-        printLimit = timeLimit / 10;
-	}
-	ctx.font = fontLayout;
-	ctx.fillStyle = "blue";
-	ctx.fillText(printLimit, 670, 70);
-	ctx.fill();
-
-    poses.forEach(({ s, keypoints }) => {
-        //drawNaviko(keypoints[0],keypoints[1],ctx);
-        drawWristPoint(keypoints[9],ctx);
-        drawWristPoint(keypoints[10],ctx);
-        drawSkeleton(keypoints, 0.5, ctx);
-        if (timeLimit == 0) {
-            ctx.font = fontLayout;
-            ctx.fillStyle = "red";
-            ctx.fillText("TIME UP", 300, 300);
-            ctx.fill();
-            ctx.fillRect(330,310,150,50);
-            ctx.font = "bold 20px Arial";
-            ctx.fillStyle = "blue";
-            ctx.fillText("ゲーム開始", 350, 345);
-            ctx.fill();
-            gameRestart([keypoints[9],keypoints[10]]);
-        } else {
-            ballsDecision(ctx,[keypoints[9],keypoints[10]]);
+        if (timeLimit % 10 == 0) {
+            looptmptime = new Date();
+            console.log(looptmptime - loopstarttime)
+            loopstarttime = looptmptime
+            printLimit = timeLimit / 10;
         }
+        ctx.font = fontLayout;
+        ctx.fillStyle = "blue";
+        ctx.fillText(printLimit, 670, 70);
+        ctx.fill();
+
+        poses.forEach(({ s, keypoints }) => {
+            //drawNaviko(keypoints[0],keypoints[1],ctx);
+            drawWristPoint(keypoints[9], ctx);
+            drawWristPoint(keypoints[10], ctx);
+            drawSkeleton(keypoints, 0.5, ctx);
+            if (timeLimit == 0) {
+                ctx.font = fontLayout;
+                ctx.fillStyle = "red";
+                ctx.fillText("TIME UP", 300, 300);
+                ctx.fill();
+                ctx.fillRect(330, 310, 150, 50);
+                ctx.font = "bold 20px Arial";
+                ctx.fillStyle = "blue";
+                ctx.fillText("ゲーム開始", 350, 345);
+                ctx.fill();
+                gameRestart([keypoints[9], keypoints[10]]);
+            } else {
+                ballsDecision(ctx, [keypoints[9], keypoints[10]]);
+            }
         });
 
 
-	ctx.font = fontLayout;
-	ctx.fillStyle = "red";
-	ctx.fillText(score, 70, 70);
-	ctx.fill();
-	timeLimit -= 1;
-	if(timeLimit <= 0){
-	    timeLimit = 0;
-	}
-    stats.end();
-    annimationCallbackId = requestAnimationFrame(poseDetectionFrame);
+        ctx.font = fontLayout;
+        ctx.fillStyle = "red";
+        ctx.fillText(score, 70, 70);
+        ctx.fill();
+        timeLimit -= 1;
+        if (timeLimit <= 0) {
+            timeLimit = 0;
+        }
+        stats.end();
+        annimationCallbackId = requestAnimationFrame(poseDetectionFrame);
     }
 }
 
-function drawWristPoint(wrist,ctx){
+function drawWristPoint(wrist, ctx) {
     ctx.beginPath();
-    ctx.arc(wrist.position.x , wrist.position.y, 3, 0, 2 * Math.PI);
+    ctx.arc(wrist.position.x, wrist.position.y, 3, 0, 2 * Math.PI);
     ctx.fillStyle = "pink";
     ctx.fill();
 }
 
-function drawNaviko(nose, leye, ctx){
+function drawNaviko(nose, leye, ctx) {
     navScale = (leye.position.x - nose.position.x - 50) / 20;
     if (navScale < 1) navScale = 1;
     let nw = naviko.width * navScale;
     let nh = naviko.height * navScale;
-    ctx.drawImage(naviko,nose.position.x - nh / 2 , nose.position.y - nh / 1.5, nw, nh);
+    ctx.drawImage(naviko, nose.position.x - nh / 2, nose.position.y - nh / 1.5, nw, nh);
 }
 
 function drawSkeleton(keypoints, minConfidence, ctx, scale = 1) {
     const adjacentKeyPoints =
         posenet.getAdjacentKeyPoints(keypoints, minConfidence);
-  
+
     adjacentKeyPoints.forEach((keypoints) => {
-      drawSegment(
-          toTuple(keypoints[0].position), toTuple(keypoints[1].position), color,
-          scale, ctx);
+        drawSegment(
+            toTuple(keypoints[0].position), toTuple(keypoints[1].position), color,
+            scale, ctx);
     });
-  }
+}
 
 function drawSegment([ay, ax], [by, bx], color, scale, ctx) {
     ctx.beginPath();
@@ -190,56 +192,57 @@ function drawSegment([ay, ax], [by, bx], color, scale, ctx) {
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = color;
     ctx.stroke();
-  }
+}
 
-function toTuple({y, x}) {
+function toTuple({ y, x }) {
     return [y, x];
-  }
+}
 
-function ballsDecision(ctx,wrists){
-    for(i=0;i<ballNum;i++){
+function ballsDecision(ctx, wrists) {
+    for (i = 0; i < ballNum; i++) {
         balls[i].y += 30;
         if (balls[i].y > contentHeight) {
             balls[i] = resetBall();
             return;
-        }  else {
-	    wrists.forEach((wrist) => {
-		if((balls[i].x - 50)  <= wrist.position.x && wrist.position.x <= (balls[i].x + 50) &&
-		   (balls[i].y - 50) <= wrist.position.y && wrist.position.y <= (balls[i].y + 50)){
-		    score += 10;
-		    balls[i] = resetBall();
-		}
-	    });
-	    ctx.beginPath();
-            ctx.arc(balls[i].x , balls[i].y, 25, 0, 2 * Math.PI);
+        } else {
+            wrists.forEach((wrist) => {
+                if ((balls[i].x - 50) <= wrist.position.x && wrist.position.x <= (balls[i].x + 50) &&
+                    (balls[i].y - 50) <= wrist.position.y && wrist.position.y <= (balls[i].y + 50)) {
+                    score += 10;
+                    sound.play();
+                    balls[i] = resetBall();
+                }
+            });
+            ctx.beginPath();
+            ctx.arc(balls[i].x, balls[i].y, 25, 0, 2 * Math.PI);
             ctx.fillStyle = balls[i].color
             ctx.fill();
         }
     }
 }
 
-function gameRestart(wrists){
-	    wrists.forEach((wrist) => {
-		if((330 - 10)  <= wrist.position.x && wrist.position.x <= (480 + 10) &&
-		   (310 - 10) <= wrist.position.y && wrist.position.y <= (360+ 10)){
+function gameRestart(wrists) {
+    wrists.forEach((wrist) => {
+        if ((330 - 10) <= wrist.position.x && wrist.position.x <= (480 + 10) &&
+            (310 - 10) <= wrist.position.y && wrist.position.y <= (360 + 10)) {
             balls = [];
             balls = initBalls(ballNum);
             score = 0;
             timeLimit = 50;
             printLimit = timeLimit / 10;
-		}
-	    });
+        }
+    });
 }
 
-function resetBall(){
-    color = Math.floor(Math.random()*3);
-    return {color:colors[color], x:Math.floor(Math.random()*(contentWidth  - 50) + 50), y:0}
+function resetBall() {
+    color = Math.floor(Math.random() * 3);
+    return { color: colors[color], x: Math.floor(Math.random() * (contentWidth - 50) + 50), y: 0 }
 }
 
-function initBalls(n=2){
-    let x,y
+function initBalls(n = 2) {
+    let x, y
     let initBalls = []
-    for(i=0;i<n;i++){
+    for (i = 0; i < n; i++) {
         let ball = resetBall();
         initBalls.push(ball);
     }
