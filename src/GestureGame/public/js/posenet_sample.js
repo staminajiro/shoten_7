@@ -87,7 +87,7 @@ function detectPoseInRealTime(video, net) {
     balls = [];
     balls = initBalls(ballNum);
     score = 0;
-    timeLimit = 50;
+    timeLimit = 0;
     printLimit = timeLimit / 10;
 
     const canvas = document.getElementById('canvas');
@@ -96,6 +96,7 @@ function detectPoseInRealTime(video, net) {
 
     var loopstarttime = new Date();
     var looptmptime = new Date();
+    poseDetectionFrame();
     async function poseDetectionFrame() {
         stats.begin();
         let poses = [];
@@ -121,26 +122,27 @@ function detectPoseInRealTime(video, net) {
 	ctx.fillText(printLimit, 670, 70);
 	ctx.fill();
 
-	if (timeLimit == 0) {
-	    ctx.font = fontLayout;
-	    ctx.fillStyle = "red";
-	    ctx.fillText("TIME UP", 300, 300);
-        ctx.fill();
-        ctx.fillRect(330,310,150,50);
-        ctx.font = "bold 20px Arial";
-        ctx.fillStyle = "blue";
-        ctx.fillText("ゲーム開始", 350, 345);
-        ctx.fill();
-        return;
-	} else {
-        poses.forEach(({ s, keypoints }) => {
-		    //drawNaviko(keypoints[0],keypoints[1],ctx);
-		    drawWristPoint(keypoints[9],ctx);
-            drawWristPoint(keypoints[10],ctx);
-            drawSkeleton(keypoints, 0.5, ctx);
-		    ballsDecision(ctx,[keypoints[9],keypoints[10]]);
-            });
-	}
+    poses.forEach(({ s, keypoints }) => {
+        //drawNaviko(keypoints[0],keypoints[1],ctx);
+        drawWristPoint(keypoints[9],ctx);
+        drawWristPoint(keypoints[10],ctx);
+        drawSkeleton(keypoints, 0.5, ctx);
+        if (timeLimit == 0) {
+            ctx.font = fontLayout;
+            ctx.fillStyle = "red";
+            ctx.fillText("TIME UP", 300, 300);
+            ctx.fill();
+            ctx.fillRect(330,310,150,50);
+            ctx.font = "bold 20px Arial";
+            ctx.fillStyle = "blue";
+            ctx.fillText("ゲーム開始", 350, 345);
+            ctx.fill();
+            gameRestart([keypoints[9],keypoints[10]]);
+        } else {
+            ballsDecision(ctx,[keypoints[9],keypoints[10]]);
+        }
+        });
+
 
 	ctx.font = fontLayout;
 	ctx.fillStyle = "red";
@@ -153,7 +155,6 @@ function detectPoseInRealTime(video, net) {
     stats.end();
     annimationCallbackId = requestAnimationFrame(poseDetectionFrame);
     }
-    poseDetectionFrame();
 }
 
 function drawWristPoint(wrist,ctx){
@@ -215,6 +216,19 @@ function ballsDecision(ctx,wrists){
             ctx.fill();
         }
     }
+}
+
+function gameRestart(wrists){
+	    wrists.forEach((wrist) => {
+		if((330 - 10)  <= wrist.position.x && wrist.position.x <= (480 + 10) &&
+		   (310 - 10) <= wrist.position.y && wrist.position.y <= (360+ 10)){
+            balls = [];
+            balls = initBalls(ballNum);
+            score = 0;
+            timeLimit = 50;
+            printLimit = timeLimit / 10;
+		}
+	    });
 }
 
 function resetBall(){
