@@ -87,7 +87,7 @@ function detectPoseInRealTime(video, net) {
     balls = [];
     balls = initBalls(ballNum);
     score = 0;
-    timeLimit = 200;
+    timeLimit = 50;
     printLimit = timeLimit / 10;
 
     const canvas = document.getElementById('canvas');
@@ -125,6 +125,11 @@ function detectPoseInRealTime(video, net) {
 	    ctx.font = fontLayout;
 	    ctx.fillStyle = "red";
 	    ctx.fillText("TIME UP", 300, 300);
+        ctx.fill();
+        ctx.fillRect(330,310,150,50);
+        ctx.font = "bold 20px Arial";
+        ctx.fillStyle = "blue";
+        ctx.fillText("ゲーム開始", 350, 345);
         ctx.fill();
         return;
 	} else {
