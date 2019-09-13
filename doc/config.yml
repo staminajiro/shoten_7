@@ -40,7 +40,7 @@ texstyle: ["reviewmacro"]
 # LaTeX用のdocumentclassを指定する
 # オプションについてはsty/README.mdを参照
 # デフォルトは印刷用。電子配布版を作るには media=ebook とする
-texdocumentclass: ["review-jsbook", "media=print,paper=a5,serial_pagination=true,head_space=15mm,number_of_lines=35,baselineskip=15.4pt,line_length=37zw"]
+texdocumentclass: ["review-jsbook", "media=print,paper=a5,serial_pagination=true,head_space=15mm,number_of_lines=35,baselineskip=15.4pt,line_length=37zw,openany"]
 
 # https://mochikoastech.hatenablog.com/entry/2019/08/08/102254
 # texdocumentclass: ["review-jsbook", "media=print,paper=b5,serial_pagination=true,hiddenfolio=nikko-pc,openany,fontsize=10pt,baselineskip=15.4pt,line_length=40zw,number_of_lines=35,head_space=30mm,headsep=10mm,headheight=5mm,footskip=10mm"]
