@@ -41,7 +41,7 @@ docker run -p 8080:8080 gesturegame
 
 ![カメラを許可###scale=0.5###](../images/chap02_camera.png)
 
-![カメラを許可###scale=0.5###](../images/chap02_gametop.png)
+![起動画面###scale=0.5###](../images/chap02_gametop.png)
 
 ## Webアプリ化
 posenet_sampleは、index.htmlのローカルファイルをブラウザで開くだけでゲームができるようになっています。  
