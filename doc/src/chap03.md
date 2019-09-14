@@ -1,14 +1,14 @@
 # webブラウザで動かすじゃんけん
 
 ## はじめに
-webブラウザ上でじゃんけんをするモデルを動かしました。
+本記事では、webブラウザ上でじゃんけんをするモデルを動かすことに挑戦してみました。
 モデルの学習はGoogle Colabで行い、
 Nuxt.js, TensorFlow.jsを使ってwebアプリを作成しました。
 ブラウザはChromeを使用しています。
 
 ## モデルの作成
 Google Colab上でモデルを作成します。
-TensorFlowのチュートリアル(https://www.tensorflow.org/tutorials/images/transfer_learning)を参考にしました。
+TensorFlowのチュートリアル(https://www.tensorflow.org/tutorials/images/transfer\_learning)を参考にしました。
 また、データはからあげさんのデータセット(https://github.com/karaage0703/janken_dataset)を使用させていただきました。
 
 ```
@@ -50,7 +50,7 @@ val_data = data_gen.flow_from_directory(
 )
 ```
 
-チュートリアルを参考にモデルの作成、コンパイル、訓練をしました。
+チュートリアルを参考にモデルの作成・コンパイル・訓練を行いました。
 以下のようなモデルを作成しました。
 
 ```python
@@ -82,10 +82,9 @@ Non-trainable params: 2,257,984
 _________________________________________________________________
 ```
 
-TensorFlow.jsで動かすためにモデルを保存します。
-tensorflowjsをインポートします。
-最新のバージョンのtensorflowjsではうまくいかなかったので、
-バージョンを指定してインストールします。
+以上のモデルをTensorFlow.jsで動かすために、モデルをTensorFlow.jsように変換してから保存します。
+最新のバージョンのtensorflowjsではうまくいかなかったので(2019/09/14現在)、
+バージョンを指定してインストールしてください。
 
 ```
 !pip install tensorflowjs==1.2.6
@@ -247,14 +246,15 @@ predict()はmodelの予測した確率から、カメラに写っている手を
 ![アプリ画面](../images/chapter03_janken_app.jpg)
 
 ## おわりに
-あまり精度はよくないですがじゃんけんをする簡単なアプリを作ることができたと思います。
-今後の改善点としては、
+あまり精度はよくないですが、じゃんけんを行う簡単なアプリを作ることができました。
+今後の改善として、
 - モデルの精度の向上
 - グー、チョキ、パーをテキストではなく画像で表示
-があると思います。
-
+を行っていきたいです。
 
 ## 参考文献
 - https://www.tensorflow.org/tutorials/images/transfer_learning
 - https://github.com/karaage0703/janken_dataset
 - https://ja.nuxtjs.org/guide/installation/
+
+(sito65536)
