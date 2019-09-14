@@ -4,7 +4,7 @@
 落ちてくるお菓子を手でキャッチすると得点が得られます。  
 
 このゲームのベースとなっているプログラム(https://github.com/gnavi-blog/posenet_sample)の詳細は、  
-ぐるなびさんのテックブログ(https://developers.gnavi.co.jp/entry/posenet/hasegawa)で紹介されています。
+[ぐるなびさんのテックブログ](https://developers.gnavi.co.jp/entry/posenet/hasegawa)で紹介されています。
 
 posenet_sampleに以下のような機能を追加し、より遊びやすく・楽しいものに仕上げました。
 
@@ -60,7 +60,10 @@ Dockerイメージビルド時に証明書を作成し、httpsでWebサーバー
 
 ```Dockerfile
 RUN openssl genrsa -out orekey.pem 1024 && \
-    openssl req -new -key orekey.pem -subj "/C=JP/ST=Tokyo-to/L=Shibuya/O=Company Name/OU=IT dept./CN=Company Dept CA" > orekey.csr && \
+    openssl req -new -key orekey.pem -subj \
+    "/C=JP/ST=Tokyo-to/L=Shibuya/O=Company \
+    Name/OU=IT dept./CN=Company Dept CA" > \
+    orekey.csr && \
     openssl x509 -req -in orekey.csr -signkey orekey.pem -out orekey.cert
 ```
 
@@ -107,8 +110,10 @@ gameRestart([keypoints[9],keypoints[10]]);
 
 function gameRestart(wrists){
     wrists.forEach((wrist) => {
-    if((330 - 10)  <= wrist.position.x && wrist.position.x <= (480 + 10) &&
-        (310 - 10) <= wrist.position.y && wrist.position.y <= (360+ 10)){
+    if((330 - 10)  <= wrist.position.x && \
+    wrist.position.x <= (480 + 10) &&
+        (310 - 10) <= wrist.position.y && \
+         wrist.position.y <= (360+ 10)){
         balls = [];
         balls = initBalls(ballNum);
         score = 0;

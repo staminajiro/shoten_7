@@ -1,4 +1,4 @@
-# Jetsonで作る一人じゃんけんゲーム
+# Jetsonでじゃんけん画像の推論
 
 ## はじめに
 全章ではTensorFlow.jsを用いてブラウザ上でじゃんけんの推論を行いましたが、本章でJetson Nanoというシングルボードコンピューターを用いて、gpuを使ったじゃんけん画像の推論機能を作成する過程を紹介します。
@@ -26,7 +26,10 @@ mkdir ~/workspace/tmp
 
 # install pytouch
 cd ~/workspace/tmp
-wget https://nvidia.box.com/shared/static/veo87trfaawj5pfwuqvhl6mzc5b55fbj.whl -O torch-1.1.0a0+b457266-cp36-cp36m-linux_aarch64.whl
+wget https://nvidia.box.com/shared/static/\
+veo87trfaawj5pfwuqvhl6mzc5b55fbj.whl \
+-O torch-1.1.0a0 \
++b457266-cp36-cp36m-linux_aarch64.whl
 pip3 install numpy torch-1.1.0a0+b457266-cp36-cp36m-linux_aarch64.whl
 
 # install torch vision
@@ -60,7 +63,7 @@ torch.cuda.is_available() # -> gpuが使える場合True
 
 今回は画像の学習はJetson Nanoではなく、Google Colaboratory（以下、colabo）というgoogleが提供しているPython実行環境上で行います。colaboは無料で使えるJupyter Notebook環境で、GPUを利用することも可能です。また、PyTorchもデフォルトでインストールされているので、手軽にディープラーニングを試すことができます。
 
-今回は、PyTorchが公開している"Transfer Learning Tutorial(https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html)"を参考に、じゃんけん画像判定モデルを構築していきます。
+今回は、PyTorchが公開している"[Transfer Learning Tutorial](https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html)"を参考に、じゃんけん画像判定モデルを構築していきます。
 
 Transfer Learning(転移学習)は、公開されているモデルの構造・パラメータを流用して、簡易に学習を行うことができる手法です。
 PyTorchはサブモジュールのtorchvisionを用いることで、簡単に公開されているモデルをダウンロードすることができます。
@@ -172,7 +175,8 @@ def init_model(model_path, class_num):
     num_ftrs = model_conv.fc.in_features
     model_conv.fc = nn.Linear(num_ftrs, class_num)
 
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' \
+    if torch.cuda.is_available() else 'cpu')
     print(device)
     model_conv = model_conv.to(device)
     print('start loading')
@@ -190,7 +194,8 @@ def predict(image, class_names):
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+            transforms.Normalize([0.485, 0.456, 0.406], \
+            [0.229, 0.224, 0.225])])
 
     image = data_transform(image).unsqueeze(0).cuda()
     print('start predicting')

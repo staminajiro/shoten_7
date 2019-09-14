@@ -10,12 +10,10 @@
 
 ## Jetson Nano
 
-Jetson Nano。ちっちゃいけどGPUも積んでるすごいやつ。今回はこいつを使って、ビリヤード場で簡単に撮影→変換ができるようにすることが目標です。
+[Jetson Nano](https://www.nvidia.com/ja-jp/autonomous-machines/embedded-systems/jetson-nano/)。ちっちゃいけどGPUも積んでるすごいやつ。今回はこいつを使って、ビリヤード場で簡単に撮影→変換ができるようにすることが目標です。
 
 <s>しかしこいつが使われることはなかった・・・</s>
 
-- Jetson Nano  
-(https://www.nvidia.com/ja-jp/autonomous-machines/embedded-systems/jetson-nano/)
 
 ## 実装したいもの(理想)
 
@@ -25,8 +23,7 @@ OpenCVでの実装のようです。とてもサクサクしていて素敵で�
 
 完成形のイメージには非常に近いです。
 
-- 斜めに写った画像をCanvasで矩形に補正する  
-(https://memo.sugyan.com/entry/2018/09/03/212712)
+- [斜めに写った画像をCanvasで矩形に補正する](https://memo.sugyan.com/entry/2018/09/03/212712)
 
 ## 実装したもの(現実)
 
@@ -34,10 +31,8 @@ OpenCVでの実装のようです。とてもサクサクしていて素敵で�
 + TypeScript (3.5.3)
 + html5
 
-せっかくなのでこの機会にTypeScriptに入門したいと思い、一般的な四角形から矩形への射影変換をTypeScriptで実装することにしました。愚直に書いたのでGPUを使えず3FPSくらいが限度になりそうかなーと思いつつ実装。式はこの辺りを参考にしました。
+せっかくなのでこの機会にTypeScriptに入門したいと思い、一般的な四角形から矩形への射影変換をTypeScriptで実装することにしました。愚直に書いたのでGPUを使えず3FPSくらいが限度になりそうかなーと思いつつ実装。式は[この辺り](http://kondolab.org/archive/2010/research/cadcgtext/ChapE/ChapE02.html)を参考にしました。
 
-- E.2　二次元の射影変換
-(http://kondolab.org/archive/2010/research/cadcgtext/ChapE/ChapE02.html)
 
 ソースコードの全文はGithubに置いてあります。以下は変換後座標が変換前の座標のどこに対応するかを返す関数の実装です。本実装では矩形側のcanvasに1ピクセルごとに以下の関数を呼び出して元画像のピクセルをコピーしています。  
 

@@ -8,8 +8,8 @@ Nuxt.js, TensorFlow.jsを使ってwebアプリを作成しました。
 
 ## モデルの作成
 Google Colab上でモデルを作成します。
-TensorFlowのチュートリアル(https://www.tensorflow.org/tutorials/images/transfer\_learning)を参考にしました。
-また、データはからあげさんのデータセット(https://github.com/karaage0703/janken_dataset)を使用させていただきました。
+[TensorFlowのチュートリアル](https://www.tensorflow.org/tutorials/images/transfer\_learning)を参考にしました。
+また、データは[からあげさんのデータセット](https://github.com/karaage0703/janken_dataset)を使用させていただきました。
 
 ```
 !git clone https://github.com/karaage0703/janken_dataset data
@@ -97,7 +97,7 @@ tfjs.converters.save_keras_model(model, save_dir)
 ## webアプリの作成
 ### ライブラリのインストール
 node.jsをインストールし、
-nuxt.jsのガイド(https://ja.nuxtjs.org/guide/installation/)を参考にwebアプリを作成します。
+[nuxt.jsのガイド](https://ja.nuxtjs.org/guide/installation/)を参考にwebアプリを作成します。
 
 ```powershell
 npx create-nuxt-app <project-name>
