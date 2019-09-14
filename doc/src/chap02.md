@@ -21,6 +21,7 @@ posenet_sampleに以下のような機能を追加し、より遊びやすく・
 
 ## アプリの起動
 以下のコマンドを実行してください。
+
 ```
 git clone git@github.com:staminajiro/shoten_7.git
 
@@ -30,6 +31,7 @@ docker build ./ -t gesturegame
 
 docker run -p 8080:8080 gesturegame
 ```
+
 無事起動できたら、(https://localhost:8080)にアクセスします。
 
 以下の画面のように、プライバシーエラーが表示されたら、  
@@ -63,6 +65,7 @@ RUN openssl genrsa -out orekey.pem 1024 && \
 ```
 
 Webサーバー起動時に、作成した証明書を参照するようにします。
+
 ```index.js
 // 証明書のファイルを指定する
 const options = { 
@@ -86,6 +89,7 @@ var server = https.createServer(options,app);
 「ゲーム開始」ボタンを配置します。
 canvasに四角形を描画するfillRect()と文字列を表示するfillText()を使って、
 「ゲーム開始」ボタン(のようなもの)を表現します。
+
 ```
 ctx.fillRect(330,310,150,50);
 ctx.font = "bold 20px Arial";
@@ -114,6 +118,7 @@ function gameRestart(wrists){
     });
 }
 ```
+
 ## 効果音の追加
 
 取得時に効果音が流れるように
@@ -127,3 +132,6 @@ function gameRestart(wrists){
 ラズパイ　jetson GPD Pocket で比較
 
 ## さいごに
+
+
+(kt-watson)
