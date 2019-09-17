@@ -94,6 +94,12 @@ tfjs.converters.save_keras_model(model, save_dir)
 
 保存したデータはローカルにダウンロードします。
 
+
+//embed[latex]{
+\clearpage
+//}
+
+
 ## webアプリの作成
 ### ライブラリのインストール
 node.jsをインストールし、
