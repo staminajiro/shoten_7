@@ -146,8 +146,8 @@ function ballsDecision(ctx, wrists) {
             return;
         } else {
             wrists.forEach((wrist) => {
-                if ((balls[i].x - 50) <= wrist.position.x && wrist.position.x <= (balls[i].x + 50) &&
-                    (balls[i].y - 50) <= wrist.position.y && wrist.position.y <= (balls[i].y + 50)) {
+                if ((balls[i].x - 50) <= wrist.position.x &&  wrist.position.x <= (balls[i].x + 50) &&
+                    (balls[i].y - 50) <= wrist.position.y &&  wrist.position.y <= (balls[i].y + 50)) {
                     score += 10;
                     sound.play();
                     balls[i] = resetBall();
@@ -169,24 +169,23 @@ function ballsDecision(ctx, wrists) {
 
 ### ラズパイさん
 
-![らずぱい###scale=0.5###](../images/chap02_scp_rasp.png)
+![ラズパイさん###scale=0.5###](../images/chap02_scp_rasp.png)
 
 残念ながら、ジェスチャーゲームを起動することはできませんでした。
 
 ### ジェットソンさん
 
-![jetson###scale=0.5###](../images/chap02_scp_jetsonnano.png)
+![ジェットソンさん###scale=0.5###](../images/chap02_scp_jetsonnano.png)
 
 快適にゲームをプレイすることができます。
 
 ### GPDさん
 
-![GPD###scale=0.5###](../images/chap02_scp_GPD.png)
+![GPDさん###scale=0.5###](../images/chap02_scp_GPD.png)
 
 快適にゲームをプレイすることができます。
 
-現在日本で購入できるラズパイさんの最新モデルでも、スペック不足のようです。  
-ラズパイ4さんに期待です。  
+現在日本で購入できるラズパイさんの最新モデルでも、スペック不足のようです。ラズパイ4さんに期待です。  
 NVIDIAのGPUを積んでいるジェットソンさんは流石、というべきか、快適にゲームを楽しめます。  
 また、本記事の執筆やプログラムの開発に利用しているGPDさんも、ジェットソンさんに負けないぐらい快適にゲームが楽しめます。
 画面もキーボードもついているので、1台あると大活躍です。
