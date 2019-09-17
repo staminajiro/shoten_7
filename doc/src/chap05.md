@@ -102,7 +102,7 @@ USBケーブルをJetson Nanoに挿すだけで、簡単にカメラと接続す
 学習済みモデルでは、ゴッホの星月夜の画像をスタイル画像として使っています。
 ![###scale=0.5###](../images/chapter05_gogh.jpg)
 
-入力画像のサイズやファイル形式に応じて複数のモデルが用意されており、今回は256x256のKeras用モデル（starry_night_256x256_025.h5）を使用します。
+入力画像のサイズやファイル形式に応じて複数のモデルが用意されており、今回は256x256のKeras用モデル（starry\_night\_256x256\_025.h5）を使用します。
 モデルファイル名の「025」は、先ほど説明したネットワークの枝刈りの割合がα=0.25であることを表しています。
 
 fritz-modelsのディレクトリで以下のコマンドを実行することで、モデルを動かすことができます。
@@ -156,7 +156,7 @@ OSError: Unable to open file (file signature not found)
 
 モデルの学習が完了すると、任意の入力画像に対してスタイル変換を行なった結果をGoogle Colab上で確認することができます。
 
-モデルのパラメーターは、Keras用のファイル形式（my_style_025.h5）で保存されています。
+モデルのパラメーターは、Keras用のファイル形式（my\_style\_025.h5）で保存されています。
 Jetson Nano上で動かしたい場合は、Google Colabからローカルマシンにモデルファイルをダウンロードして、Jetsonからアクセス可能な場所に移動します。
 
 
@@ -166,7 +166,7 @@ Jetson Nano上で動かしたい場合は、Google Colabからローカルマシ
 TensorFlow Liteとは、TensorFlowの学習済みモデルを推論用に特化させることで、モバイル端末などのデバイス上で実行できるようにするライブラリです。
 その際に、量子化によってパラメーターの型を変換することで、モデルサイズを小さくすることができます。
 
-Fritzモデルにも、Keras用のモデルをTensorFlow Lite用に変換するスクリプト（convert_to_tflite.py）が用意されていますが、このスクリプトでは量子化を行なっていないため、量子化するようにソースコードを変更します。
+Fritzモデルにも、Keras用のモデルをTensorFlow Lite用に変換するスクリプト（convert\_to\_tflite.py）が用意されていますが、このスクリプトでは量子化を行なっていないため、量子化するようにソースコードを変更します。
 実装は非常に簡単で、コンバーターの定義後に最適化の変数を配列形式で指定するだけです。
 
 ```
@@ -182,14 +182,14 @@ converter = tf.lite.TFLiteConverter.from_frozen_graph(
 converter.optimizations = [tf.lite.Optimize.OPTIMIZE_FOR_SIZE]
 ```
 
-最適化の方法には、上記の重み量子化（OPTIMIZE_FOR_SIZE）以外にも、完全整数型（DEFAULT）や16bit浮動小数点型（FLOAT16）などがあり、軽量化の度合いやモデルの性能などの要件に応じて選ぶことができます。
+最適化の方法には、上記の重み量子化（OPTIMIZE\_FOR\_SIZE）以外にも、完全整数型（DEFAULT）や16bit浮動小数点型（FLOAT16）などがあり、軽量化の度合いやモデルの性能などの要件に応じて選ぶことができます。
 また、この量子化はバージョン1.14.0以降のTensorFlowにしか対応していないので、古いバージョンで使用したい場合はご注意ください。
 
-変更後のスクリプトをGoogle ColabやJetson上で実行すると、TensorFlow Lite用のモデル（my_style_025.tfilite）が生成されます。
+変更後のスクリプトをGoogle ColabやJetson上で実行すると、TensorFlow Lite用のモデル（my\_style\_025.tfilite）が生成されます。
 若干ではありますが、元のKeras用のモデルと比較してファイルサイズが小さくなったことが確認できました（570KB -> 479KB）。
 
 モデルの変換が完了したら、いよいよJetson Nanoでスタイル変換を行います。
-推論用のプログラム（stylize_movie.py）はKeras用になっているので、こちらもTensorFlow Lite用に変更する必要があります。
+推論用のプログラム（stylize\_movie.py）はKeras用になっているので、こちらもTensorFlow Lite用に変更する必要があります。
 推論を行う箇所を抜粋すると、以下のようになります。
 
 ```
