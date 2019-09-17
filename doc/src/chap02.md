@@ -1,7 +1,7 @@
 # カメラの中でいくつとれるかな？ゲーム
 ## はじめに  
 カメラの中でいくつとれるかな？ゲームは、WebカメラとWebブラウザだけで手軽に遊べるジェスチャゲームです。  
-落ちてくるお菓子を手でキャッチすると得点が得られます。  
+落ちてくるボールを手でキャッチすると得点が得られます。  
 
 このゲームのベースとなっているプログラム(https://github.com/gnavi-blog/posenet_sample)の詳細は、  
 [ぐるなびさんのテックブログ](https://developers.gnavi.co.jp/entry/posenet/hasegawa)で紹介されています。
@@ -11,7 +11,6 @@ posenet_sampleに以下のような機能を追加し、より遊びやすく・
 - Webアプリ化
 - 操作インタフェースの追加
 - 効果音の追加
-- 落ちてくるものをお菓子に変更
 
 本書では、追加した機能について簡単に紹介します。  
 
@@ -125,18 +124,69 @@ function gameRestart(wrists){
 ```
 
 ## 効果音の追加
+Webアプリ化、操作インタフェースの機能を追加したので、初期に比べて遊びやすくなりました。  
+最後に、よりゲームが楽しくなるように、効果音を追加します。  
 
-取得時に効果音が流れるように
+以下のように、javascriptのAudioオブジェクトを使用して、ボールの位置と手の位置がある程度(今回の例だと50px)一致した場合に、効果音が鳴るように記述します。
 
-## 落ちてくるものをお菓子に変更
+効果音は以下のサイトのものを使用させていただきました。  
+効果音ラボ(https://soundeffect-lab.info/)
+```
+let sound = new Audio();
+sound.src = "static/sound/suck1.mp3";
 
-ボールからお菓子に
+~
+
+function ballsDecision(ctx, wrists) {
+    for (i = 0; i < ballNum; i++) {
+        balls[i].y += 30;
+        if (balls[i].y > contentHeight) {
+            balls[i] = resetBall();
+            return;
+        } else {
+            wrists.forEach((wrist) => {
+                if ((balls[i].x - 50) <= wrist.position.x && wrist.position.x <= (balls[i].x + 50) &&
+                    (balls[i].y - 50) <= wrist.position.y && wrist.position.y <= (balls[i].y + 50)) {
+                    score += 10;
+                    sound.play();
+                    balls[i] = resetBall();
+                }
+            });
+            ctx.beginPath();
+            ctx.arc(balls[i].x, balls[i].y, 25, 0, 2 * Math.PI);
+            ctx.fillStyle = balls[i].color
+            ctx.fill();
+        }
+    }
+}
+```
 
 ## 実行結果比較
+これで、ジャスチャーゲームをより遊びやすく・楽しいものにする準備が整いました。  
+冒頭でも述べましたが、このジェスチャーゲームは、クライアントの処理性能に依存するので、
+小型端末である、Raspberry Pi 3 Model B+(以下ラズパイさん)、jetson nano(以下ジェットソンさん)、GPD Pocket 2 (以下、GPDさん)で実行結果を比較します。
 
-ラズパイ　jetson GPD Pocket で比較
+### ラズパイさん
+![らずぱい###scale=0.5###](../images/chap02_scp_rasp.png)  
+残念ながら、ジェスチャーゲームを起動することはできませんでした。
+### ジェットソンさん
+![jetson###scale=0.5###](../images/chap02_scp_jetsonnano.png)
+快適にゲームをプレイすることができます。
+### GPDさん
+![GPD###scale=0.5###](../images/chap02_scp_GPD.png)
+快適にゲームをプレイすることができます。
+
+現在日本で購入できるラズパイさんの最新モデルでも、スペック不足のようです。  
+ラズパイ4さんに期待です。  
+NVIDIAのGPUを積んでいるジェットソンさんは流石、というべきか、快適にゲームを楽しめます。  
+また、本記事の執筆やプログラムの開発に利用しているGPDさんも、ジェットソンさんに負けないぐらい快適にゲームが楽しめます。
+画面もキーボードもついているので、1台あると大活躍です。
 
 ## さいごに
-
+javascriptだけで簡単にジェスチャーゲームを作ることができました。
+このような身体を使ったゲームは、意外と大人も楽しめます。  
+日頃運動できてないなー、という方に楽しんで頂けたらと思います。
+スコアが表示されるので、同僚と競い合ってもよいですね。  
+まだまだ改良を加えて、もっと楽しいゲームにしていきたいと思います。
 
 (kt-watson)
