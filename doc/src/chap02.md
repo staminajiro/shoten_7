@@ -131,6 +131,7 @@ Webアプリ化、操作インタフェースの機能を追加したので、�
 
 効果音は以下のサイトのものを使用させていただきました。  
 効果音ラボ(https://soundeffect-lab.info/)
+
 ```
 let sound = new Audio();
 sound.src = "static/sound/suck1.mp3";
@@ -167,13 +168,21 @@ function ballsDecision(ctx, wrists) {
 小型端末である、Raspberry Pi 3 Model B+(以下ラズパイさん)、jetson nano(以下ジェットソンさん)、GPD Pocket 2 (以下、GPDさん)で実行結果を比較します。
 
 ### ラズパイさん
-![らずぱい###scale=0.5###](../images/chap02_scp_rasp.png)  
+
+![らずぱい###scale=0.5###](../images/chap02_scp_rasp.png)
+
 残念ながら、ジェスチャーゲームを起動することはできませんでした。
+
 ### ジェットソンさん
+
 ![jetson###scale=0.5###](../images/chap02_scp_jetsonnano.png)
+
 快適にゲームをプレイすることができます。
+
 ### GPDさん
+
 ![GPD###scale=0.5###](../images/chap02_scp_GPD.png)
+
 快適にゲームをプレイすることができます。
 
 現在日本で購入できるラズパイさんの最新モデルでも、スペック不足のようです。  
