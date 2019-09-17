@@ -146,8 +146,10 @@ function ballsDecision(ctx, wrists) {
             return;
         } else {
             wrists.forEach((wrist) => {
-                if ((balls[i].x - 50) <= wrist.position.x &&  wrist.position.x <= (balls[i].x + 50) &&
-                    (balls[i].y - 50) <= wrist.position.y &&  wrist.position.y <= (balls[i].y + 50)) {
+                if ((balls[i].x - 50) <= wrist.position.x && \
+                wrist.position.x <= (balls[i].x + 50) && \
+                    (balls[i].y - 50) <= wrist.position.y && \
+                    wrist.position.y <= (balls[i].y + 50)) {
                     score += 10;
                     sound.play();
                     balls[i] = resetBall();
