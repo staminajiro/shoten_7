@@ -1,21 +1,18 @@
-# Jetsonで作る一人じゃんけんゲーム
+# Jetsonでじゃんけん画像の推論
 
 ## はじめに
-本章でJetson Nanoというシングルボードコンピューターを用いてじゃんけんゲームを作成する過程を紹介します。
+全章ではTensorFlow.jsを用いてブラウザ上でじゃんけんの推論を行いましたが、本章でJetson Nanoというシングルボードコンピューターを用いて、gpuを使ったじゃんけん画像の推論機能を作成する過程を紹介します。
 
 ## 目次
 + Jetson Nanoとは
 + Jetson NanoでPyTorchを動かす
 + Google Colaboratoryでじゃんけんモデルの学習
 + Jetson Nanoでじゃんけん画像を推論
-+ （おまけ）webアプリ化してじゃんけんゲームを作ろう
 
 ## Jetson Nanoとは
 Jetson NanoはNVIDIA社が販売しているGPU付きのシングルボードコンピューターです。
 cuda等の環境がデフォルトで同梱されているため、tensorflow等のディープラーニングライブラリを比較的簡単にgpu上で動作させることができます。
 今回はPyTorchというFacebookが開発したディープラーニングライブラリを用いて、Jetson Nano上で「グー」「チョキ」「パー」の3つの画像を判別していきます。
-
-![Jetson Nanoのかっこいい写真](./images/xxxx.jpeg=300x300)
 
 ## Jetson NanoでPyTorchを動かす
 
@@ -29,7 +26,10 @@ mkdir ~/workspace/tmp
 
 # install pytouch
 cd ~/workspace/tmp
-wget https://nvidia.box.com/shared/static/veo87trfaawj5pfwuqvhl6mzc5b55fbj.whl -O torch-1.1.0a0+b457266-cp36-cp36m-linux_aarch64.whl
+wget https://nvidia.box.com/shared/static/\
+veo87trfaawj5pfwuqvhl6mzc5b55fbj.whl \
+-O torch-1.1.0a0 \
++b457266-cp36-cp36m-linux_aarch64.whl
 pip3 install numpy torch-1.1.0a0+b457266-cp36-cp36m-linux_aarch64.whl
 
 # install torch vision
@@ -63,7 +63,7 @@ torch.cuda.is_available() # -> gpuが使える場合True
 
 今回は画像の学習はJetson Nanoではなく、Google Colaboratory（以下、colabo）というgoogleが提供しているPython実行環境上で行います。colaboは無料で使えるJupyter Notebook環境で、GPUを利用することも可能です。また、PyTorchもデフォルトでインストールされているので、手軽にディープラーニングを試すことができます。
 
-今回は、PyTorchが公開している"Transfer Learning Tutorial(https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html)"を参考に、じゃんけん画像判定モデルを構築していきます。
+今回は、PyTorchが公開している"[Transfer Learning Tutorial](https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html)"を参考に、じゃんけん画像判定モデルを構築していきます。
 
 Transfer Learning(転移学習)は、公開されているモデルの構造・パラメータを流用して、簡易に学習を行うことができる手法です。
 PyTorchはサブモジュールのtorchvisionを用いることで、簡単に公開されているモデルをダウンロードすることができます。
@@ -71,13 +71,7 @@ PyTorchはサブモジュールのtorchvisionを用いることで、簡単に�
 ### 転移学習
 
 今回はresnet50という軽量なモデルを用いて、転移学習を行います。
-
-ディープラーニングでは、多数のニューラルネットが層状に組み合わさってできています。 # 雑な説明、時間があれば無限に書けるが...
-
-以下が、resnet50の層の構造です。
-
-![パワポで作ったresnet50のかっこいい絵](./images/xxxx.jpeg=300x300)
-
+ディープラーニングでは、多数のニューラルネットが層状に組み合わさったモデルを用います。
 このうち、最後の"全結合層"のみを再学習することによって、すでに学習が進んで画像の特徴抽出機能を持った層を転用することができます。
 
 以下は、PyTorchのチュートリアルに注釈をつけたものです。
@@ -97,7 +91,7 @@ num_ftrs = model_conv.fc.in_features
 model_conv.fc = nn.Linear(num_ftrs, 2)
 ```
 
-今回はじゃんけん判別モデルを作成したいため、(1)のクラス数を変更してあげましょう
+今回はじゃんけん判別モデルを作成したいため、(1)のクラス数を変更してあげましょう。
 
 ```
 class_num = 3
@@ -166,6 +160,12 @@ torch.save(model_conv.state_dict(), "{google drive directory}")
 
 以上で、モデルの学習は終了です。
 
+
+//embed[latex]{
+\clearpage
+//}
+
+
 ### Jetson Nanoでじゃんけん画像を推論
 
 それではJetson Nanoでじゃんけん画像を推論してみましょう。
@@ -181,7 +181,8 @@ def init_model(model_path, class_num):
     num_ftrs = model_conv.fc.in_features
     model_conv.fc = nn.Linear(num_ftrs, class_num)
 
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' \
+    if torch.cuda.is_available() else 'cpu')
     print(device)
     model_conv = model_conv.to(device)
     print('start loading')
@@ -199,7 +200,8 @@ def predict(image, class_names):
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+            transforms.Normalize([0.485, 0.456, 0.406], \
+            [0.229, 0.224, 0.225])])
 
     image = data_transform(image).unsqueeze(0).cuda()
     print('start predicting')
@@ -241,20 +243,7 @@ predict関数では、画像を変換し、モデルを用いて推論を行い�
 では、推論用に"goo.jpg"という名前でグーの画像をJetson上に保存し、上記のスクリプトを実行してください。
 正しく推論されたでしょうか？ 入力画像を様々に変えて実行してみると、面白いかと思います。
 
-## （おまけ）webアプリ化してじゃんけんゲームを作ろう
-
-[こちらのリポジトリ](https://github.com/staminajiro/shoten_7/tree/master/jetson)に以上の推論処理をwebアプリ化したものを格納しました。
-
-![まだ完成していないじゃんけんアプリの画像](./images/janken.jpeg=300x300)
-
-Jetson Nano上で、
-
-```
-pip3 install flask
-flask run app.py
-```
-
-とすると、localhost:5000上にwebアプリが立ち上がります。モデルのロードと1回目の推論は数分時間がかかりますが、それ以降はさくさく動きます。
-
 ## おわりに
-以上で、じゃんけん推論システムの紹介を終わります。今回はじゃんけんを題材に、シングルボードコンピュータでディープラーニングを組み込んだアプリケーションを動かしてみました。筆者が生成したモデルはまだまだ精度が低いので、画像データを増やしたり、モデルを変更したりして、今後も精度を上げていきたいと思います。みなさんも、Jetson Nanoでいろいろ遊んでみると面白いかと思います。
+以上で、じゃんけん推論システムの紹介を終わります。今回はじゃんけんを題材に、シングルボードコンピュータでディープラーニングを組み込んだアプリケーションを動かしてみました。筆者が生成したモデルはまだまだ精度が低いので、画像データを増やしたり、モデルを変更したりして、今後も精度を上げていきたいと思います。みなさんも、Jetson Nanoでいろいろと遊んでみてはいかがでしょうか。
+
+(soy-curd)

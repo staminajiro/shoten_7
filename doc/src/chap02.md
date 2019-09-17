@@ -1,17 +1,16 @@
 # カメラの中でいくつとれるかな？ゲーム
 ## はじめに  
 カメラの中でいくつとれるかな？ゲームは、WebカメラとWebブラウザだけで手軽に遊べるジェスチャゲームです。  
-落ちてくるお菓子を手でキャッチすると得点が得られます。  
+落ちてくるボールを手でキャッチすると得点が得られます。  
 
 このゲームのベースとなっているプログラム(https://github.com/gnavi-blog/posenet_sample)の詳細は、  
-ぐるなびさんのテックブログ(https://developers.gnavi.co.jp/entry/posenet/hasegawa)で紹介されています。
+[ぐるなびさんのテックブログ](https://developers.gnavi.co.jp/entry/posenet/hasegawa)で紹介されています。
 
 posenet_sampleに以下のような機能を追加し、より遊びやすく・楽しいものに仕上げました。
 
 - Webアプリ化
 - 操作インタフェースの追加
 - 効果音の追加
-- 落ちてくるものをお菓子に変更
 
 本書では、追加した機能について簡単に紹介します。  
 
@@ -21,6 +20,7 @@ posenet_sampleに以下のような機能を追加し、より遊びやすく・
 
 ## アプリの起動
 以下のコマンドを実行してください。
+
 ```
 git clone git@github.com:staminajiro/shoten_7.git
 
@@ -30,6 +30,7 @@ docker build ./ -t gesturegame
 
 docker run -p 8080:8080 gesturegame
 ```
+
 無事起動できたら、(https://localhost:8080)にアクセスします。
 
 以下の画面のように、プライバシーエラーが表示されたら、  
@@ -49,7 +50,7 @@ docker run -p 8080:8080 gesturegame
 
 ## Webアプリ化
 posenet_sampleは、index.htmlのローカルファイルをブラウザで開くだけでゲームができるようになっています。  
-更に手軽に遊べるように、Webアプリとして起動し、ブラウザでアクセするだけで遊べるように改良します。  
+更に手軽に遊べるように、Webアプリとして起動し、ブラウザでアクセスするだけで遊べるように改良します。  
 
 Webアプリのサーバー環境としてDockerを利用します。
 
@@ -58,11 +59,15 @@ Dockerイメージビルド時に証明書を作成し、httpsでWebサーバー
 
 ```Dockerfile
 RUN openssl genrsa -out orekey.pem 1024 && \
-    openssl req -new -key orekey.pem -subj "/C=JP/ST=Tokyo-to/L=Shibuya/O=Company Name/OU=IT dept./CN=Company Dept CA" > orekey.csr && \
+    openssl req -new -key orekey.pem -subj \
+    "/C=JP/ST=Tokyo-to/L=Shibuya/O=Company \
+    Name/OU=IT dept./CN=Company Dept CA" > \
+    orekey.csr && \
     openssl x509 -req -in orekey.csr -signkey orekey.pem -out orekey.cert
 ```
 
 Webサーバー起動時に、作成した証明書を参照するようにします。
+
 ```index.js
 // 証明書のファイルを指定する
 const options = { 
@@ -86,6 +91,7 @@ var server = https.createServer(options,app);
 「ゲーム開始」ボタンを配置します。
 canvasに四角形を描画するfillRect()と文字列を表示するfillText()を使って、
 「ゲーム開始」ボタン(のようなもの)を表現します。
+
 ```
 ctx.fillRect(330,310,150,50);
 ctx.font = "bold 20px Arial";
@@ -103,8 +109,10 @@ gameRestart([keypoints[9],keypoints[10]]);
 
 function gameRestart(wrists){
     wrists.forEach((wrist) => {
-    if((330 - 10)  <= wrist.position.x && wrist.position.x <= (480 + 10) &&
-        (310 - 10) <= wrist.position.y && wrist.position.y <= (360+ 10)){
+    if((330 - 10)  <= wrist.position.x && \
+    wrist.position.x <= (480 + 10) &&
+        (310 - 10) <= wrist.position.y && \
+         wrist.position.y <= (360+ 10)){
         balls = [];
         balls = initBalls(ballNum);
         score = 0;
@@ -114,16 +122,81 @@ function gameRestart(wrists){
     });
 }
 ```
+
 ## 効果音の追加
+Webアプリ化、操作インタフェースの機能を追加したので、初期に比べて遊びやすくなりました。  
+最後に、よりゲームが楽しくなるように、効果音を追加します。  
 
-取得時に効果音が流れるように
+以下のように、javascriptのAudioオブジェクトを使用して、ボールの位置と手の位置がある程度(今回の例だと50px)一致した場合に、効果音が鳴るように記述します。
 
-## 落ちてくるものをお菓子に変更
+効果音は以下のサイトのものを使用させていただきました。  
+効果音ラボ(https://soundeffect-lab.info/)
 
-ボールからお菓子に
+```
+let sound = new Audio();
+sound.src = "static/sound/suck1.mp3";
+
+~
+
+function ballsDecision(ctx, wrists) {
+    for (i = 0; i < ballNum; i++) {
+        balls[i].y += 30;
+        if (balls[i].y > contentHeight) {
+            balls[i] = resetBall();
+            return;
+        } else {
+            wrists.forEach((wrist) => {
+                if ((balls[i].x - 50) <= wrist.position.x && \
+                wrist.position.x <= (balls[i].x + 50) && \
+                    (balls[i].y - 50) <= wrist.position.y && \
+                    wrist.position.y <= (balls[i].y + 50)) {
+                    score += 10;
+                    sound.play();
+                    balls[i] = resetBall();
+                }
+            });
+            ctx.beginPath();
+            ctx.arc(balls[i].x, balls[i].y, 25, 0, 2 * Math.PI);
+            ctx.fillStyle = balls[i].color
+            ctx.fill();
+        }
+    }
+}
+```
 
 ## 実行結果比較
+これで、ジャスチャーゲームをより遊びやすく・楽しいものにする準備が整いました。  
+冒頭でも述べましたが、このジェスチャーゲームは、クライアントの処理性能に依存するので、
+小型端末である、Raspberry Pi 3 Model B+(以下ラズパイさん)、jetson nano(以下ジェットソンさん)、GPD Pocket 2 (以下、GPDさん)で実行結果を比較します。
 
-ラズパイ　jetson GPD Pocket で比較
+### ラズパイさん
+
+![ラズパイさん###scale=0.5###](../images/chap02_scp_rasp.png)
+
+残念ながら、ジェスチャーゲームを起動することはできませんでした。
+
+### ジェットソンさん
+
+![ジェットソンさん###scale=0.5###](../images/chap02_scp_jetsonnano.png)
+
+快適にゲームをプレイすることができます。
+
+### GPDさん
+
+![GPDさん###scale=0.5###](../images/chap02_scp_GPD.png)
+
+快適にゲームをプレイすることができます。
+
+現在日本で購入できるラズパイさんの最新モデルでも、スペック不足のようです。ラズパイ4さんに期待です。  
+NVIDIAのGPUを積んでいるジェットソンさんは流石、というべきか、快適にゲームを楽しめます。  
+また、本記事の執筆やプログラムの開発に利用しているGPDさんも、ジェットソンさんに負けないぐらい快適にゲームが楽しめます。
+画面もキーボードもついているので、1台あると大活躍です。
 
 ## さいごに
+javascriptだけで簡単にジェスチャーゲームを作ることができました。
+このような身体を使ったゲームは、意外と大人も楽しめます。  
+日頃運動できてないなー、という方に楽しんで頂けたらと思います。
+スコアが表示されるので、同僚と競い合ってもよいですね。  
+まだまだ改良を加えて、もっと楽しいゲームにしていきたいと思います。
+
+(kt-watson)

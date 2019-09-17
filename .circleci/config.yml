@@ -6,7 +6,7 @@ jobs:
       - run: docker pull nuitsjp/md2review:latest
       - run: docker pull vvakame/review:latest
       - checkout
-      - run: cd doc && sh ./pdf.sh
+      - run: cd doc && sh ./pdf_prod.sh
       - store_artifacts:
           path: doc/book.pdf
           destination: book.pdf

@@ -35,7 +35,7 @@ Jetsonでの実装に入る前に、そもそもStyle Transferがどのような
 「理論はいいから、とにかく動くものを作りたい！」という方は、本節を飛ばしていただいても構いません。
 
 Style Transferの実現方法やネットワーク構造については様々な方法が提案されていますが、特に有名なのは 以下のJohnsonらの手法です。  
-![###scale=0.8###](../images/chapter05_johnson.jpg)
+![画像は"Perceptual Losses for Real-Time Style Transfer and Super-Resolution"より###scale=0.8###](../images/chapter05_johnson.jpg)
 
 上記の手法では、入力画像xをスタイル変換用のConv-Deconvネットワークfwに通すことで、変換画像y^を生成します。
 モデルの学習では、複数の入力画像xに対して、その生成画像y^と変換対象のスタイル画像ysおよび元のコンテンツ画像ycを学習済みの損失計算用ネットワーク（VGG-16）に入力し、特定の層の出力を取得します。
@@ -276,3 +276,5 @@ Style Transferは既にスマートフォンアプリなどに使われていま
 またディープラーニングによるスタイル変換技術は、単なる画風変換以外にも動画制作や音声合成など、他の分野でも今後活用が進んでいくのではないでしょうか。
 
 皆さんも是非、Style Transferを使って色々な面白いサービスを作ってみてください！
+
+(KazukiYazawa)
