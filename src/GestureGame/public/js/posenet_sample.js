@@ -41,7 +41,7 @@ let video;
 let sound = new Audio();
 sound.src = "static/sound/suck1.mp3";
 var annimationCallbackId;
-//naviko.src = "naviko.png"
+naviko.src = "static/images/christmas_mark01_santa.png";
 balls = initBalls(ballNum);
 bindPage();
 
@@ -125,7 +125,7 @@ function detectPoseInRealTime(video, net) {
         ctx.fill();
 
         poses.forEach(({ s, keypoints }) => {
-            //drawNaviko(keypoints[0],keypoints[1],ctx);
+            drawNaviko(keypoints[0],keypoints[1],ctx);
             drawWristPoint(keypoints[9], ctx);
             drawWristPoint(keypoints[10], ctx);
             drawSkeleton(keypoints, 0.5, ctx);
