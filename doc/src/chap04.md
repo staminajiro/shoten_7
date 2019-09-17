@@ -160,6 +160,12 @@ torch.save(model_conv.state_dict(), "{google drive directory}")
 
 以上で、モデルの学習は終了です。
 
+
+//embed[latex]{
+\clearpage
+//}
+
+
 ### Jetson Nanoでじゃんけん画像を推論
 
 それではJetson Nanoでじゃんけん画像を推論してみましょう。
