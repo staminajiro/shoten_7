@@ -1,0 +1,17 @@
+version: 2.1
+jobs:
+  makepdf:
+    machine: true
+    steps:
+      - run: docker pull nuitsjp/md2review:latest
+      - run: docker pull vvakame/review:latest
+      - checkout
+      - run: cd doc && sh ./pdf_prod.sh
+      - store_artifacts:
+          path: doc/book.pdf
+          destination: book.pdf
+      - run: curl -F file=@doc/book.pdf -F channels=notification -F token=${SLACK_TOKEN} -F title="${CIRCLE_PROJECT_REPONAME} | branch -> ${CIRCLE_BRANCH} | commit -> ${GIT_COMMIT_DESC}"  https://slack.com/api/files.upload
+workflows:
+  build-deploy:
+    jobs:
+      - makepdf

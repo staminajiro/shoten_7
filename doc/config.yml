@@ -1,0 +1,52 @@
+# この設定ファイルでサポートするRe:VIEWのバージョン番号。
+review_version: 3.0
+
+contentdir: review
+
+# ブック名(ファイル名になるもの。ASCII範囲の文字を使用)
+bookname: book
+# 書名
+booktitle: 最新デバイスで作る！あそびのレシピ集
+# 著者
+aut: sutaminamiura, pytran3, kt-watson, KazukiYazawa, sito65536, soy-curd
+# prt:
+pbl: すたみなじろう
+prt_url: すたみなじろう
+date: 2019/09/23
+rights: (C) 2019 @staminajiro
+
+titlepage: false
+# CSSファイル (yamlファイルおよびReVIEWファイルを置いたディレクトリにあること
+# stylesheet: ["style.css"]
+# 目次として抽出するレベル
+toclevel: 1
+# セクション番号を表示するレベル
+secnolevel: 3
+epubversion: 3
+# HTMLのバージョン(現時点では4または5。デフォルトは4。epubversionを3にした場合は自動で5に設定される)
+htmlversion: 5
+# 目次生成用
+toc: true
+# 奥付生成用
+colophon: true
+debug: true
+review_version: 3
+coverimage: null
+externallink: false
+
+# LaTeX用のスタイルファイル(styディレクトリ以下に置くこと)
+texstyle: ["reviewmacro"]
+#
+# LaTeX用のdocumentclassを指定する
+# オプションについてはsty/README.mdを参照
+# デフォルトは印刷用。電子配布版を作るには media=ebook とする
+texdocumentclass: ["review-jsbook", "media=print,paper=a5,serial_pagination=true,head_space=15mm,number_of_lines=35,baselineskip=15.4pt,line_length=37zw,openany,footskip=4mm"]
+
+# https://mochikoastech.hatenablog.com/entry/2019/08/08/102254
+# texdocumentclass: ["review-jsbook", "media=print,paper=b5,serial_pagination=true,hiddenfolio=nikko-pc,openany,fontsize=10pt,baselineskip=15.4pt,line_length=40zw,number_of_lines=35,head_space=30mm,headsep=10mm,headheight=5mm,footskip=10mm"]
+
+pdfmaker:
+  # 画像のscale=X.Xという指定を画像拡大縮小率からページ最大幅の相対倍率に変換する
+  image_scale2width: true
+  # 奥付を作成するか。trueを指定するとデフォルトの奥付、ファイル名を指定するとそれがcolophon.htmlとしてコピーされる
+  colophon: true
